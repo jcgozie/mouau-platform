@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageIntro from "@/components/PageIntro";
-import { mockContactData } from "@/lib/contactData";
+import { mockDirectorates } from "@/lib/directoratesData";
 
 export const metadata = { title: "Contact & Support | MOUAU" };
 
@@ -10,7 +10,11 @@ export default function ContactPage({
 }: {
   searchParams: { q?: string };
 }) {
-  const { directory } = mockContactData;
+  // Sources the same Directorate records as /directorates and the
+  // Footer — this used to be a separate, competing mockContactData
+  // list (retired in Stage 6) that could silently drift from the real
+  // directorate names.
+  const directory = mockDirectorates;
   const filtered = directory.filter((d) =>
     searchParams.q ? d.name.toLowerCase().includes(searchParams.q.toLowerCase()) : true
   );
@@ -43,11 +47,13 @@ export default function ContactPage({
               {filtered.map((d) => (
                 <li key={d.id} className="border-t border-sage py-4 last:border-b">
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <span className="font-display text-lg text-ink">{d.name}</span>
+                    <a href={`/directorates/${d.slug}`} className="font-display text-lg text-ink hover:text-forest">
+                      {d.name}
+                    </a>
                     <span className="text-xs text-ink/50">{d.category}</span>
                   </div>
                   <p className="mt-1 text-sm text-ink/60">
-                    {d.email} &middot; {d.phone} &middot; {d.location}
+                    {d.contactEmail} &middot; {d.phone} &middot; {d.location}
                   </p>
                 </li>
               ))}

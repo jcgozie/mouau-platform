@@ -1,22 +1,16 @@
-const DIRECTORATES = [
-  "Academic Planning",
-  "Information & Communication Technology",
-  "Physical Planning & Development",
-  "Research, Innovation & Development",
-  "Linkages & International Programmes",
-  "Works & Maintenance Services",
-];
+import { mockDirectorates } from "@/lib/directoratesData";
 
 const QUICK_LINKS = [
   { label: "About MOUAU", href: "/about" },
   { label: "Admissions", href: "/study/admissions" },
   { label: "Academic Calendar", href: "/study#calendar" },
-  { label: "Library", href: "/students/library" },
+  { label: "Institutional Directory", href: "/directory" },
   { label: "Bursary", href: "/directorates/bursary" },
-  { label: "Careers at MOUAU", href: "/directorates/hr" },
+  { label: "Careers at MOUAU", href: "/directorates" },
 ];
 
 export default function Footer() {
+  const directorates = mockDirectorates.filter((d) => d.approvalStatus === "approved").slice(0, 6);
   return (
     <footer className="bg-forest-deep text-paper/80">
       <div className="mx-auto max-w-7xl px-5 py-14 md:px-8">
@@ -32,10 +26,10 @@ export default function Footer() {
           <div>
             <h3 className="text-sm font-medium text-paper">Directorates & Units</h3>
             <ul className="mt-3 space-y-2 text-sm">
-              {DIRECTORATES.map((d) => (
-                <li key={d}>
-                  <a href="/directorates" className="hover:text-paper">
-                    {d}
+              {directorates.map((d) => (
+                <li key={d.id}>
+                  <a href={`/directorates/${d.slug}`} className="hover:text-paper">
+                    {d.name}
                   </a>
                 </li>
               ))}

@@ -151,15 +151,6 @@ export interface PolicyDocument {
   accessLevel: "Public" | "Staff" | "Restricted";
 }
 
-export interface ContactUnit {
-  id: string;
-  name: string;
-  category: string;
-  email: string;
-  phone: string;
-  location: string;
-}
-
 export interface AboutData {
   leadership: LeadershipProfile[];
   policies: PolicyDocument[];
@@ -170,10 +161,6 @@ export interface AboutData {
 export interface StudyData {
   programmes: Programme[];
   courses: Course[];
-}
-
-export interface ContactData {
-  directory: ContactUnit[];
 }
 
 export interface HomepageData {
@@ -275,4 +262,64 @@ export interface EmergencyBannerConfig {
   message: string;
   linkHref?: string;
   linkLabel?: string;
+}
+
+/**
+ * STAGE 6 ADDITIONS — Institutional Directory Registry
+ * ----------------------------------------------------------------
+ * Directorate/Unit is the single source every other part of the
+ * platform (Footer, Contact directory, this section) reads from —
+ * fixing the exact "competing institutional names" problem the spec
+ * warns about (Footer and lib/contactData.ts had two different names
+ * for the ICT unit before this stage).
+ */
+
+export type ApprovalStatus = "draft" | "pending" | "approved" | "archived";
+
+export interface GovernanceMeta {
+  owner: string;
+  approvalStatus: ApprovalStatus;
+  version: string;
+  lastVerified: string; // ISO date
+}
+
+export interface DirectorateService {
+  name: string;
+  slaDays: number;
+  description: string;
+}
+
+export interface Directorate extends GovernanceMeta {
+  id: string;
+  slug: string;
+  name: string;
+  category: "Directorate" | "Unit";
+  mandate: string;
+  leadTitle: string;
+  leadName: string;
+  services: DirectorateService[];
+  forms: { name: string; note: string }[];
+  contactEmail: string;
+  phone: string;
+  location: string;
+}
+
+export type ServiceRequestStatus = "submitted" | "in_progress" | "resolved";
+
+export interface ServiceRequest {
+  id: string;
+  directorateSlug: string;
+  serviceName: string;
+  requesterName: string;
+  requesterEmail: string;
+  description: string;
+  status: ServiceRequestStatus;
+  submittedAt: string;
+}
+
+export interface DirectoryEntry {
+  type: "College" | "Department" | "Centre" | "Directorate" | "Programme" | "Researcher" | "Facility" | "Policy";
+  name: string;
+  href: string;
+  meta: string;
 }
