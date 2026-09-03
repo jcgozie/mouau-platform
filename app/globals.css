@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /*
+   * Fraunces and IBM Plex Sans are loaded via the <link> tag in
+   * app/layout.tsx (runtime fetch — works in any real deployment).
+   * This build sandbox can't reach fonts.googleapis.com to inline
+   * them via next/font at build time, so these variables carry a
+   * deliberately close fallback stack: a warm, slightly humanist
+   * serif for display text, and a clean grotesque for body/UI, so
+   * the page still reads correctly even before the webfonts load.
+   */
+  --font-fraunces: "Fraunces", Charter, "Iowan Old Style", Georgia, serif;
+  --font-plex: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-paper text-ink font-body antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display;
+  }
+
+  ::selection {
+    @apply bg-gold/30;
+  }
+
+  :focus-visible {
+    outline: 2px solid #C08A2E;
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(60px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes grow {
+  from {
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+  }
+  to {
+    stroke-dasharray: 200;
+    stroke-dashoffset: 0;
+  }
+}

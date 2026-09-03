@@ -1,0 +1,158 @@
+/**
+ * CMS CONTENT MODEL — Homepage (Stage 1)
+ * ----------------------------------------------------------------
+ * These types are the contract between the frontend and the headless
+ * CMS (Strapi/Payload) recommended in the build playbook. In this
+ * scaffold they're served by app/api/homepage/route.ts from mock data
+ * (lib/mockData.ts) so the page is fully functional without a live
+ * CMS. Swap fetchHomepageData() in lib/cms.ts to call the real CMS
+ * endpoint later — every component already reads from these shapes,
+ * so nothing downstream needs to change.
+ *
+ * Every record below is expected to carry CMS governance fields
+ * (owner, approvalStatus, lastVerified) once Stage 6 formalizes the
+ * Institutional Directory Registry — omitted here since this stage
+ * only needs to *render* approved content, not manage the workflow.
+ */
+
+export interface College {
+  id: string;
+  slug: string;
+  name: string;
+  acronym: string;
+  departmentCount: number;
+  blurb: string;
+}
+
+export interface Centre {
+  id: string;
+  slug: string;
+  name: string;
+  focusArea: string;
+  blurb: string;
+}
+
+export interface NewsItem {
+  id: string;
+  slug: string;
+  title: string;
+  category: "News" | "Announcement" | "Press Release" | "Research";
+  publishedAt: string; // ISO date
+  excerpt: string;
+}
+
+export interface InstitutionalFact {
+  label: string;
+  value: string;
+}
+
+export interface RankingEntry {
+  body: string;
+  distinction: string;
+}
+
+export interface SDGImpact {
+  number: number;
+  title: string;
+  note: string;
+}
+
+export interface ResearchHighlight {
+  theme: string;
+  headline: string;
+  summary: string;
+}
+
+/**
+ * STAGE 2 ADDITIONS — About, Study, Contact & Support
+ * ----------------------------------------------------------------
+ * Programme and Course are modelled here exactly as they'll live in
+ * the full Institutional Directory Registry (Stage 6) — Stage 3
+ * reconciles College/Department against these same records rather
+ * than redefining them, and Stage 6 adds the owner/approval/version
+ * governance fields on top without changing this shape.
+ */
+
+export type ProgrammeLevel = "Undergraduate" | "Postgraduate" | "CEC" | "Professional";
+export type StudyMode = "Full-time" | "Part-time" | "Distance";
+
+export interface Programme {
+  id: string;
+  slug: string;
+  title: string;
+  awardCode: string; // e.g. "B.Agric."
+  level: ProgrammeLevel;
+  collegeSlug: string;
+  collegeName: string;
+  mode: StudyMode[];
+  durationYears: number;
+  admissionRequirements: string[];
+  curriculumOverview: string;
+  accreditationStatus: string;
+  feesPerSession: string;
+  careerOutcomes: string[];
+}
+
+export interface Course {
+  id: string;
+  code: string; // e.g. "CSC 201"
+  title: string;
+  credits: number;
+  level: number; // 100, 200, 300...
+  semester: 1 | 2;
+  departmentName: string;
+  prerequisites: string[]; // course codes
+}
+
+export interface LeadershipProfile {
+  id: string;
+  name: string;
+  title: string;
+  bio: string;
+}
+
+export interface PolicyDocument {
+  id: string;
+  slug: string;
+  title: string;
+  owner: string;
+  version: string;
+  approvedDate: string;
+  effectiveDate: string;
+  accessLevel: "Public" | "Staff" | "Restricted";
+}
+
+export interface ContactUnit {
+  id: string;
+  name: string;
+  category: string;
+  email: string;
+  phone: string;
+  location: string;
+}
+
+export interface AboutData {
+  leadership: LeadershipProfile[];
+  policies: PolicyDocument[];
+  history: string;
+  visionMissionValues: { vision: string; mission: string; values: string[] };
+}
+
+export interface StudyData {
+  programmes: Programme[];
+  courses: Course[];
+}
+
+export interface ContactData {
+  directory: ContactUnit[];
+}
+
+export interface HomepageData {
+  colleges: College[];
+  centres: Centre[];
+  news: NewsItem[];
+  facts: InstitutionalFact[];
+  rankings: RankingEntry[];
+  sdgImpact: SDGImpact[];
+  researchHighlight: ResearchHighlight;
+}
