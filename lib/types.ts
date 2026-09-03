@@ -22,6 +22,10 @@ export interface College {
   acronym: string;
   departmentCount: number;
   blurb: string;
+  dean: string;
+  mission: string;
+  facilities: string[];
+  contactEmail: string;
 }
 
 export interface Centre {
@@ -30,6 +34,26 @@ export interface Centre {
   name: string;
   focusArea: string;
   blurb: string;
+  mandate: string;
+  director: string;
+  facilities: string[];
+  contactEmail: string;
+}
+
+export interface StaffStub {
+  id: string;
+  name: string;
+  title: string;
+}
+
+export interface Department {
+  id: string;
+  slug: string;
+  collegeSlug: string;
+  name: string;
+  hod: string;
+  overview: string;
+  staff: StaffStub[];
 }
 
 export interface NewsItem {
@@ -84,6 +108,7 @@ export interface Programme {
   level: ProgrammeLevel;
   collegeSlug: string;
   collegeName: string;
+  departmentSlug?: string; // cross-link to Department, when the programme has one
   mode: StudyMode[];
   durationYears: number;
   admissionRequirements: string[];

@@ -9,6 +9,7 @@ const programmes: Programme[] = [
     level: "Undergraduate",
     collegeSlug: "college-of-agriculture",
     collegeName: "College of Agriculture",
+    departmentSlug: "crop-science",
     mode: ["Full-time"],
     durationYears: 5,
     admissionRequirements: [
@@ -29,6 +30,7 @@ const programmes: Programme[] = [
     level: "Undergraduate",
     collegeSlug: "college-of-veterinary-medicine",
     collegeName: "College of Veterinary Medicine",
+    departmentSlug: "veterinary-medicine",
     mode: ["Full-time"],
     durationYears: 6,
     admissionRequirements: [
@@ -49,6 +51,7 @@ const programmes: Programme[] = [
     level: "Postgraduate",
     collegeSlug: "college-of-management-sciences",
     collegeName: "College of Management Sciences",
+    departmentSlug: "agricultural-economics",
     mode: ["Full-time", "Part-time"],
     durationYears: 2,
     admissionRequirements: [

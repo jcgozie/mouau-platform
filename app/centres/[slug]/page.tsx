@@ -1,0 +1,69 @@
+import { notFound } from "next/navigation";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { mockHomepageData } from "@/lib/mockData";
+
+export function generateStaticParams() {
+  return mockHomepageData.centres.map((c) => ({ slug: c.slug }));
+}
+
+export function generateMetadata({ params }: { params: { slug: string } }) {
+  const centre = mockHomepageData.centres.find((c) => c.slug === params.slug);
+  if (!centre) return {};
+  return { title: `${centre.name} | MOUAU` };
+}
+
+export default function CentreProfilePage({ params }: { params: { slug: string } }) {
+  const centre = mockHomepageData.centres.find((c) => c.slug === params.slug);
+  if (!centre) notFound();
+
+  return (
+    <>
+      <Header />
+      <main id="main-content">
+        <section className="border-b border-sage bg-sage-dim">
+          <div className="mx-auto max-w-7xl px-5 py-12 md:px-8 md:py-16">
+            <p className="text-sm font-medium text-soil">{centre.focusArea}</p>
+            <h1 className="mt-2 max-w-3xl font-display text-3xl font-medium text-forest md:text-5xl">
+              {centre.name}
+            </h1>
+            <p className="mt-3 text-ink/70">Director: {centre.director}</p>
+            <p className="mt-4 max-w-prose text-ink/75">{centre.mandate}</p>
+          </div>
+        </section>
+
+        <section className="border-b border-sage">
+          <div className="mx-auto grid max-w-7xl gap-10 px-5 py-12 md:grid-cols-2 md:px-8">
+            <div>
+              <h2 className="font-display text-2xl font-medium text-forest">Facilities</h2>
+              <ul className="mt-3 space-y-2">
+                {centre.facilities.map((f) => (
+                  <li key={f} className="border-t border-sage pt-2 text-ink/75">{f}</li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h2 className="font-display text-2xl font-medium text-forest">Projects & Outputs</h2>
+              <p className="mt-3 text-sm text-ink/50">
+                Full project and publication listings are built in Stage 4
+                (Research &amp; Innovation Hub) and linked here once live.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div className="mx-auto max-w-7xl px-5 py-12 md:px-8">
+            <h2 className="font-display text-2xl font-medium text-forest">Contact</h2>
+            <p className="mt-3 text-ink/75">
+              <a href={`mailto:${centre.contactEmail}`} className="text-forest hover:text-gold-dark">
+                {centre.contactEmail}
+              </a>
+            </p>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </>
+  );
+}

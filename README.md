@@ -97,3 +97,21 @@ lib/
 db/
   schema.sql                 Postgres schema (Stage 1 content model)
 ```
+
+## Stage 3 — Colleges, Departments, Centres & Excellence
+
+- `/colleges` — full index. `/colleges/[slug]` — College profile template:
+  real Departments and Programmes filtered live from the same Department
+  and Programme records used elsewhere (not re-typed per college).
+- `/colleges/[slug]/[deptSlug]` — Department profile: Programmes
+  (cross-linked via `Programme.departmentSlug`), Courses (matched by
+  department name), and staff — verified end-to-end (e.g. Crop Science
+  correctly shows B.Agric. Crop Science and its two CSC courses).
+- `/centres` and `/centres/[slug]` — Centre/Institute profile template.
+  The Projects & Outputs section is honestly labeled as a Stage 4
+  dependency rather than faked with placeholder content.
+- New data: `lib/departmentsData.ts` (Department, cross-linked to College
+  by `collegeSlug`). `College` and `Centre` types extended with
+  dean/mission/facilities/contact and director/mandate/facilities/contact
+  respectively, in `lib/types.ts` and `lib/mockData.ts` — not a second,
+  parallel dataset.
