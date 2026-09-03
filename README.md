@@ -115,3 +115,33 @@ db/
   dean/mission/facilities/contact and director/mandate/facilities/contact
   respectively, in `lib/types.ts` and `lib/mockData.ts` — not a second,
   parallel dataset.
+
+## Stage 4 — Research & Innovation Hub
+
+- `/research` — landing with entry points to researchers, projects,
+  publications, facilities, innovation/patents, and SDG impact mapping.
+- `/research/researchers/[slug]` — profile with ORCID link and Person
+  structured data. Enforces the contact-visibility opt-in from the spec:
+  `contactPublished: false` genuinely hides contact info (see the
+  Biotechnology Centre director's profile) rather than showing it with a
+  UI toggle that could be bypassed.
+- `/research/projects/[slug]` — SDG tags, researchers, and related
+  publications all cross-linked from the same underlying records.
+- `/research/publications/[slug]` — DOI link, ScholarlyArticle structured
+  data, author cross-links back to researcher profiles.
+- `/research/facilities` and `/research/facilities/[slug]` — **real
+  refactor of Stage 3**: College/Centre `facilities` changed from a plain
+  `string[]` to a genuine `Facility` relation (owner, location, equipment,
+  manager, services). The Stage 3 College/Department pages were updated to
+  read from this relation instead of a duplicated string list — verified
+  the College of Agriculture page still renders its 3 facilities correctly,
+  now as real links to `/research/facilities/[slug]`.
+- `/research/impact` — SDG mapping view aggregating real projects per goal
+  (verified: the cassava project correctly appears under both SDG 2 and
+  SDG 13, matching its actual `sdgTags`).
+- `/research/innovation` — patents/IP showcase and consultancy info,
+  honestly labeled that licensing/consultancy requests become real tracked
+  requests only once Stage 13 (Partner/Industry Portal) exists.
+- New data: `lib/researchData.ts` (Researcher, ResearchProject,
+  Publication, Facility — all cross-linked to Department/College/Centre
+  slugs already established in Stages 2–3, not a parallel dataset).

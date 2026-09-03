@@ -24,7 +24,6 @@ export interface College {
   blurb: string;
   dean: string;
   mission: string;
-  facilities: string[];
   contactEmail: string;
 }
 
@@ -36,7 +35,6 @@ export interface Centre {
   blurb: string;
   mandate: string;
   director: string;
-  facilities: string[];
   contactEmail: string;
 }
 
@@ -180,4 +178,69 @@ export interface HomepageData {
   rankings: RankingEntry[];
   sdgImpact: SDGImpact[];
   researchHighlight: ResearchHighlight;
+}
+
+/**
+ * STAGE 4 ADDITIONS — Research & Innovation Hub
+ * ----------------------------------------------------------------
+ * Public discovery only. Authenticated self-service (proposal
+ * submission, ethics review, dataset upload) is Stage 11's Researcher
+ * Portal — these records are read here, written there.
+ */
+
+export interface Researcher {
+  id: string;
+  slug: string;
+  name: string;
+  role: string;
+  unitType: "college" | "centre" | "department";
+  unitSlug: string;
+  unitName: string;
+  orcid: string;
+  bio: string;
+  contactPublished: boolean; // opt-in flag — never default contact info to visible
+  contactEmail?: string;
+}
+
+export interface ResearchProject {
+  id: string;
+  slug: string;
+  title: string;
+  researcherSlugs: string[]; // PI first, then collaborators
+  funder: string;
+  startDate: string;
+  endDate?: string;
+  impactNarrative: string;
+  sdgTags: number[];
+}
+
+export interface Publication {
+  id: string;
+  slug: string;
+  title: string;
+  authorSlugs: string[]; // MOUAU-affiliated authors, relation to Researcher
+  externalAuthors?: string[]; // plain text, non-affiliated co-authors
+  journal: string;
+  year: number;
+  doi: string;
+  abstract: string;
+}
+
+export interface Facility {
+  id: string;
+  slug: string;
+  name: string;
+  ownerType: "college" | "centre";
+  ownerSlug: string;
+  location: string;
+  equipment: string[];
+  managerSlug?: string; // relation to Researcher
+  services: string;
+}
+
+export interface ResearchData {
+  researchers: Researcher[];
+  projects: ResearchProject[];
+  publications: Publication[];
+  facilities: Facility[];
 }

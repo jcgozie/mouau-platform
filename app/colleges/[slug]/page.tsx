@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import { mockHomepageData } from "@/lib/mockData";
 import { mockDepartments } from "@/lib/departmentsData";
 import { mockStudyData } from "@/lib/studyData";
+import { mockResearchData } from "@/lib/researchData";
 
 export function generateStaticParams() {
   return mockHomepageData.colleges.map((c) => ({ slug: c.slug }));
@@ -24,6 +25,9 @@ export default function CollegeProfilePage({ params }: { params: { slug: string 
   // not re-typed per college.
   const departments = mockDepartments.filter((d) => d.collegeSlug === college.slug);
   const programmes = mockStudyData.programmes.filter((p) => p.collegeSlug === college.slug);
+  const facilities = mockResearchData.facilities.filter(
+    (f) => f.ownerType === "college" && f.ownerSlug === college.slug
+  );
 
   return (
     <>
@@ -96,8 +100,12 @@ export default function CollegeProfilePage({ params }: { params: { slug: string 
             <div>
               <h2 className="font-display text-2xl font-medium text-forest">Facilities</h2>
               <ul className="mt-3 space-y-2">
-                {college.facilities.map((f) => (
-                  <li key={f} className="border-t border-sage pt-2 text-ink/75">{f}</li>
+                {facilities.map((f) => (
+                  <li key={f.id} className="border-t border-sage pt-2">
+                    <a href={`/research/facilities/${f.slug}`} className="text-ink/75 hover:text-forest">
+                      {f.name}
+                    </a>
+                  </li>
                 ))}
               </ul>
             </div>

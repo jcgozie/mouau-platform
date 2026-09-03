@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { mockHomepageData } from "@/lib/mockData";
+import { mockResearchData } from "@/lib/researchData";
 
 export function generateStaticParams() {
   return mockHomepageData.centres.map((c) => ({ slug: c.slug }));
@@ -16,6 +17,16 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
 export default function CentreProfilePage({ params }: { params: { slug: string } }) {
   const centre = mockHomepageData.centres.find((c) => c.slug === params.slug);
   if (!centre) notFound();
+
+  const facilities = mockResearchData.facilities.filter(
+    (f) => f.ownerType === "centre" && f.ownerSlug === centre.slug
+  );
+  const projects = mockResearchData.projects.filter((p) =>
+    p.researcherSlugs.some((slug) => {
+      const r = mockResearchData.researchers.find((r) => r.slug === slug);
+      return r?.unitType === "centre" && r.unitSlug === centre.slug;
+    })
+  );
 
   return (
     <>
@@ -37,17 +48,30 @@ export default function CentreProfilePage({ params }: { params: { slug: string }
             <div>
               <h2 className="font-display text-2xl font-medium text-forest">Facilities</h2>
               <ul className="mt-3 space-y-2">
-                {centre.facilities.map((f) => (
-                  <li key={f} className="border-t border-sage pt-2 text-ink/75">{f}</li>
+                {facilities.map((f) => (
+                  <li key={f.id} className="border-t border-sage pt-2">
+                    <a href={`/research/facilities/${f.slug}`} className="text-ink/75 hover:text-forest">
+                      {f.name}
+                    </a>
+                  </li>
                 ))}
               </ul>
             </div>
             <div>
               <h2 className="font-display text-2xl font-medium text-forest">Projects & Outputs</h2>
-              <p className="mt-3 text-sm text-ink/50">
-                Full project and publication listings are built in Stage 4
-                (Research &amp; Innovation Hub) and linked here once live.
-              </p>
+              {projects.length === 0 ? (
+                <p className="mt-3 text-sm text-ink/50">No active projects listed yet.</p>
+              ) : (
+                <ul className="mt-3 space-y-2">
+                  {projects.map((p) => (
+                    <li key={p.id} className="border-t border-sage pt-2">
+                      <a href={`/research/projects/${p.slug}`} className="text-ink/75 hover:text-forest">
+                        {p.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
         </section>
