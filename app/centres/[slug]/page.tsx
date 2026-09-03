@@ -27,6 +27,9 @@ export default function CentreProfilePage({ params }: { params: { slug: string }
       return r?.unitType === "centre" && r.unitSlug === centre.slug;
     })
   );
+  const news = mockHomepageData.news.filter(
+    (n) => n.relatedEntityType === "centre" && n.relatedEntitySlug === centre.slug
+  );
 
   return (
     <>
@@ -73,6 +76,25 @@ export default function CentreProfilePage({ params }: { params: { slug: string }
                 </ul>
               )}
             </div>
+          </div>
+        </section>
+
+        <section className="border-b border-sage">
+          <div className="mx-auto max-w-7xl px-5 py-12 md:px-8">
+            <h2 className="font-display text-2xl font-medium text-forest">News</h2>
+            {news.length === 0 ? (
+              <p className="mt-3 text-sm text-ink/50">No news tagged to this centre yet.</p>
+            ) : (
+              <ul className="mt-4">
+                {news.map((n) => (
+                  <li key={n.id} className="border-t border-sage py-4 last:border-b">
+                    <a href={`/news/${n.slug}`} className="text-ink hover:text-forest">
+                      {n.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </section>
 

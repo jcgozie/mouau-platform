@@ -54,6 +54,8 @@ export interface Department {
   staff: StaffStub[];
 }
 
+export type EntityType = "college" | "centre" | "department" | "researcher" | "project";
+
 export interface NewsItem {
   id: string;
   slug: string;
@@ -61,6 +63,10 @@ export interface NewsItem {
   category: "News" | "Announcement" | "Press Release" | "Research";
   publishedAt: string; // ISO date
   excerpt: string;
+  body: string;
+  relatedEntityType?: EntityType;
+  relatedEntitySlug?: string;
+  relatedEntityName?: string;
 }
 
 export interface InstitutionalFact {
@@ -243,4 +249,30 @@ export interface ResearchData {
   projects: ResearchProject[];
   publications: Publication[];
   facilities: Facility[];
+}
+
+/**
+ * STAGE 5 ADDITIONS — News & Media
+ */
+
+export type EventAudience = "Public" | "Students" | "Staff" | "Invite-only";
+
+export interface EventItem {
+  id: string;
+  slug: string;
+  title: string;
+  dateTime: string; // ISO datetime
+  venue: string;
+  organizer: string;
+  audience: EventAudience;
+  registrationUrl?: string;
+  livestreamUrl?: string;
+  description: string;
+}
+
+export interface EmergencyBannerConfig {
+  isActive: boolean;
+  message: string;
+  linkHref?: string;
+  linkLabel?: string;
 }
