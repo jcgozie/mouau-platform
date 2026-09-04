@@ -1,4 +1,5 @@
 import type { NewsItem } from "@/lib/types";
+import Image from "next/image";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-GB", {
@@ -37,16 +38,30 @@ export default function NewsFeed({ news }: { news: NewsItem[] | null }) {
               <li key={item.id} className="border-t border-sage last:border-b">
                 <a
                   href={`/news/${item.slug}`}
-                  className="group flex flex-col gap-2 py-5 md:flex-row md:items-baseline md:gap-6"
+                  className="group flex flex-col gap-3 py-5 md:flex-row md:items-start md:gap-6"
                 >
-                  <span className="shrink-0 text-sm text-ink/50 md:w-28">
+                  <span className="shrink-0 text-sm text-ink/50 md:w-28 md:pt-0.5">
                     {formatDate(item.publishedAt)}
                   </span>
-                  <span className="shrink-0 text-sm font-medium text-soil md:w-32">
+                  <span className="shrink-0 text-sm font-medium text-soil md:w-32 md:pt-0.5">
                     {item.category}
                   </span>
-                  <span className="font-display text-lg text-ink group-hover:text-forest">
-                    {item.title}
+                  <span className="flex-1">
+                    <span className="block font-display text-lg text-ink group-hover:text-forest">
+                      {item.title}
+                    </span>
+                    {item.personImageUrl && item.personName && (
+                      <span className="mt-2 flex items-center gap-2">
+                        <Image
+                          src={item.personImageUrl}
+                          alt={item.personName}
+                          width={40}
+                          height={40}
+                          className="h-10 w-10 rounded-full object-cover"
+                        />
+                        <span className="block text-xs text-ink/60">{item.personName}</span>
+                      </span>
+                    )}
                   </span>
                 </a>
               </li>

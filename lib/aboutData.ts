@@ -13,9 +13,10 @@ export const mockAboutData: AboutData = {
   leadership: [
     {
       id: "vc",
-      name: "Prof. (Vice-Chancellor)",
+      name: "Prof. Ursula Ngozi Akanwa",
       title: "Vice-Chancellor",
       bio: "Provides overall academic and administrative leadership to the university.",
+      imageUrl: "/images/vc-ursula-akanwa.jpeg",
     },
     {
       id: "dvc-academic",

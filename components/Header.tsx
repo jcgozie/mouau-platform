@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 const NAV_ITEMS = [
   { label: "About", href: "/about" },
@@ -23,12 +24,22 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-sage bg-paper/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-8">
-        <a href="/" className="flex items-baseline gap-2">
-          <span className="font-display text-2xl font-semibold tracking-tight text-forest">
-            MOUAU
-          </span>
-          <span className="hidden font-body text-xs text-ink/60 md:inline">
-            Michael Okpara University of Agriculture
+        <a href="/" className="flex items-center gap-3">
+          <Image
+            src="/images/mouau-logo.jpg"
+            alt="MOUAU crest"
+            width={40}
+            height={34}
+            className="h-9 w-auto"
+            priority
+          />
+          <span className="flex items-baseline gap-2">
+            <span className="font-display text-2xl font-semibold tracking-tight text-forest">
+              MOUAU
+            </span>
+            <span className="hidden font-body text-xs text-ink/60 md:inline">
+              Michael Okpara University of Agriculture
+            </span>
           </span>
         </a>
 

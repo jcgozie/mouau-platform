@@ -67,6 +67,8 @@ export interface NewsItem {
   relatedEntityType?: EntityType;
   relatedEntitySlug?: string;
   relatedEntityName?: string;
+  personImageUrl?: string; // photo of a named figure central to the story
+  personName?: string;
 }
 
 export interface InstitutionalFact {
@@ -138,6 +140,7 @@ export interface LeadershipProfile {
   name: string;
   title: string;
   bio: string;
+  imageUrl?: string;
 }
 
 export interface PolicyDocument {

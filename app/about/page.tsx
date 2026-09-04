@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageIntro from "@/components/PageIntro";
+import Image from "next/image";
 import { mockAboutData } from "@/lib/aboutData";
 import { mockHomepageData } from "@/lib/mockData";
 
@@ -64,6 +65,15 @@ export default function AboutPage() {
             <ul className="mt-6 grid gap-x-8 gap-y-6 md:grid-cols-3">
               {leadership.map((l) => (
                 <li key={l.id} className="border-t border-sage pt-4">
+                  {l.imageUrl && (
+                    <Image
+                      src={l.imageUrl}
+                      alt={l.name}
+                      width={80}
+                      height={80}
+                      className="mb-3 h-20 w-20 rounded-full object-cover"
+                    />
+                  )}
                   <div className="font-display text-lg text-ink">{l.name}</div>
                   <div className="text-sm font-medium text-soil">{l.title}</div>
                   <p className="mt-2 text-sm text-ink/60">{l.bio}</p>

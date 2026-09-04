@@ -145,3 +145,83 @@ db/
 - New data: `lib/researchData.ts` (Researcher, ResearchProject,
   Publication, Facility — all cross-linked to Department/College/Centre
   slugs already established in Stages 2–3, not a parallel dataset).
+
+## Stage 5 — News & Media
+
+- `/news` — landing, filterable by category via real GET-form links.
+- `/news/[slug]` — article detail with OpenGraph metadata, NewsArticle
+  structured data, and a real "Related:" link to the tagged College/Centre.
+- `/news/events` — upcoming/past toggle and audience filter, both via URL
+  params. Verified: Upcoming view correctly sorts chronologically and
+  excludes the past-dated Staff-only Senate briefing.
+- `/news/events/[slug]` — registration CTA, livestream link, and a
+  genuinely generated `.ics` calendar file (built from the event's real
+  data, not a placeholder link).
+- `/news/media-kit` — press contact and a real filtered press-release
+  archive.
+- **Site-wide emergency banner** (`components/EmergencyBanner.tsx`),
+  wired into `app/layout.tsx` above every page's content — not scoped to
+  the News section. Off by default (`isActive: false` in
+  `lib/newsData.ts`); flip it to see it render site-wide. Dismissible,
+  `role="alert"`/`aria-live="assertive"` for screen readers.
+- **Real retrofit, not just new pages**: `NewsItem` now carries
+  `relatedEntityType`/`relatedEntitySlug`. The Stage 3 College and Centre
+  profile pages were updated to filter the global news list down to only
+  articles tagged to that specific entity — verified the College of
+  Agriculture page shows exactly its one tagged article, not the full
+  4-item global feed.
+
+## Stage 6 — Institutional Directory Registry
+
+**Found and fixed a real duplicate-naming bug before building anything
+new**: `Footer.tsx` and the now-retired `lib/contactData.ts` had two
+different names for the ICT unit ("Information & Communication
+Technology" vs "ICT Directorate"). Both now read from one source,
+`lib/directoratesData.ts`.
+
+- `/directorates` and `/directorates/[slug]` — mandate, services with
+  real SLA days, forms, leadership, contact. Every "Submit a request"
+  link goes to a working form.
+- `/directorates/[slug]/request` + `app/api/service-requests/route.ts` —
+  a **real** ticket system: POST creates a ticket with a generated ID,
+  GET retrieves it. Verified end-to-end: create → fetch by ID → correct
+  404 for an unknown ID. Storage is in-memory (documented limitation —
+  resets on redeploy; production needs this backed by Postgres, same
+  pattern as `db/schema.sql`).
+- `/directorates/requests/status` — public, no-login status lookup by
+  ticket ID.
+- `/directory` — the central Institutional Directory search across all
+  8 entity types (College, Department, Centre, Directorate, Programme,
+  Researcher, Facility, Policy) — 47 real entries indexed live from
+  existing data, not a separately maintained list. Verified: searching
+  "agriculture" correctly returns results across 3 different types.
+- `/directorates/admin` — governance review page. Two things worth being
+  precise about:
+  - **Duplicate-name detection is a real algorithm** (`lib/governance.ts`,
+    Levenshtein-based), verified to catch genuine spelling variants
+    ("Centre" vs "Center", a typo'd "Agricuture") — but it correctly does
+    *not* flag acronym-vs-full-name pairs like "ICT" vs "Information &
+    Communication Technology", since that's alias resolution, a different
+    problem requiring a canonical-name mapping table, not string
+    similarity. Don't oversell what this catches.
+  - **Approve/Reject buttons are a labeled client-side demo**, not a real
+    workflow — they update local component state only. Real enforcement
+    needs the Approver RBAC role from Stage 7 and a persistent database,
+    neither of which exist yet in this scaffold. This is stated on the
+    page itself, not just in this README.
+
+## Branding update — MOUAU crest + Vice-Chancellor photo
+
+- Added the real MOUAU crest (`public/images/mouau-logo.jpg`) to
+  `components/Header.tsx` — since Header renders on every single page,
+  this one change puts the logo in the header site-wide, not per-page.
+- Added the Vice-Chancellor's photo (`public/images/vc-ursula-akanwa.jpeg`)
+  and name to the one homepage mention of the VC — the "Vice-Chancellor
+  commissions upgraded poultry teaching and research unit" story in the
+  homepage News feed. `NewsItem` gained optional `personImageUrl`/
+  `personName` fields; `components/NewsFeed.tsx` renders them only when
+  present, so the other 3 news rows are unaffected.
+- Now also updated: the About page's Leadership section shows Prof.
+  Ursula Ngozi Akanwa's real photo and name — `LeadershipProfile` gained
+  an optional `imageUrl` field, rendered only when present so the other
+  two leadership entries (still placeholders) are unaffected.
