@@ -352,7 +352,8 @@ export interface PlatformUser {
 
 export type AuditAction =
   | "login_success" | "login_failed" | "mfa_challenge_passed" | "mfa_challenge_failed"
-  | "mfa_enabled" | "logout" | "account_registered" | "role_assigned" | "role_check_denied";
+  | "mfa_enabled" | "logout" | "account_registered" | "role_assigned" | "role_check_denied"
+  | "admission_decision" | "matriculation";
 
 export interface AuditLogEntry {
   id: string;
@@ -360,4 +361,54 @@ export interface AuditLogEntry {
   actorEmail: string;
   detail: string;
   timestamp: string;
+}
+
+/**
+ * STAGE 8A ADDITIONS — Applicant Journey, Admission, Matriculation
+ * ----------------------------------------------------------------
+ * Admission eligibility reads Stage 2's real Programme records — this
+ * stage never redefines requirements, it only tracks the application
+ * lifecycle against them.
+ */
+
+export type ApplicationStatus =
+  | "submitted" | "under_review" | "offered" | "accepted" | "declined" | "withdrawn";
+
+export type DocumentVerificationStatus = "pending" | "verified" | "rejected";
+
+export interface ApplicationDocument {
+  id: string;
+  documentType: string;
+  fileName: string;
+  uploadedAt: string;
+  verificationStatus: DocumentVerificationStatus;
+}
+
+export interface Application {
+  id: string;
+  applicantEmail: string;
+  applicantName: string;
+  programmeSlug: string;
+  programmeTitle: string;
+  collegeSlug: string;
+  collegeName: string;
+  status: ApplicationStatus;
+  documents: ApplicationDocument[];
+  submittedAt: string;
+  decisionBy?: string;
+  decisionAt?: string;
+  decisionNote?: string;
+}
+
+export interface StudentMasterRecord {
+  id: string;
+  studentEmail: string;
+  matricNumber: string;
+  programmeSlug: string;
+  programmeTitle: string;
+  collegeName: string;
+  entrySession: string;
+  modeOfStudy: string;
+  status: "active";
+  matriculatedAt: string;
 }

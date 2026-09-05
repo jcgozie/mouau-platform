@@ -13,6 +13,8 @@ const ACTION_LABEL: Record<string, string> = {
   account_registered: "Account registered",
   role_assigned: "Role assigned",
   role_check_denied: "Access denied by role check",
+  admission_decision: "Admission decision recorded",
+  matriculation: "Student matriculated",
 };
 
 export default function AdminPortalPage() {

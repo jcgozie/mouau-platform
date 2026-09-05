@@ -274,3 +274,46 @@ v12 API rather than v13's rewritten interface — a real migration should
 move to v13 or a maintained alternative. No real external IdP
 (Keycloak/OIDC) is connected — this demonstrates the RBAC/MFA mechanics
 for real, it doesn't replace a production identity provider.
+
+## Stage 8A — Applicant Journey, Admission, Matriculation
+
+The full lifecycle is real and was verified end-to-end via direct API
+testing (not just code review):
+
+1. **Apply** (`/portals/applicant/apply` → `POST /api/admissions/apply`) —
+   validated against real Stage 2 Programme records. Verified: applying
+   twice is rejected with a 409.
+2. **Document upload** (`/portals/applicant/documents`) — honestly
+   metadata-only (filename, type, extension validated) — no file bytes
+   are stored. A production deployment needs real cloud storage (S3,
+   Vercel Blob) behind this; the upload contract is real, the persistence
+   isn't.
+3. **Staff review** (`/portals/staff/admissions` → `POST
+   /api/admissions/decide`) — real, persisted decisions (not a client-side
+   demo like Stage 6's governance board), logged with `decisionBy`/
+   `decisionAt`.
+4. **Offer response** (`/portals/applicant/offer` → `POST
+   /api/admissions/respond`) — accepting creates a real
+   `StudentMasterRecord` with a generated matric number
+   (`MOUAU/<session>/<college-acronym>/<sequence>`).
+5. **The automatic Applicant→Student role transition** — verified with a
+   real, deliberate before/after test: accessing `/portals/student`
+   **before** the session refreshes correctly returns `403` (the JWT
+   still only has `Applicant`); calling the same `session.update()`
+   mechanism the offer page calls automatically refreshes the JWT's roles
+   from the live user store, and the same request immediately after
+   returns `200` — no sign-out/sign-in required, exactly the spec's
+   requirement.
+6. **Student Portal** now shows the real matric number, programme, and
+   college when a `StudentMasterRecord` exists, verified against actual
+   rendered HTML output for a real matriculated test account.
+
+**Bug found and fixed during testing**: `/portals/applicant` and
+`/portals/student` needed `export const dynamic = "force-dynamic"` to
+avoid the same build-time-freeze bug hit in Stages 1 and 7 — caught by
+testing, not by inspection.
+
+**Audit trail extended**: added dedicated `admission_decision` and
+`matriculation` audit actions (previously would have been mislabeled
+under an unrelated existing action type) — both visible in
+`/portals/admin`'s real audit log.

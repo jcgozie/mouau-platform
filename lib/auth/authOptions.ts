@@ -56,10 +56,21 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.roles = (user as any).roles;
         token.uid = (user as any).id;
+      }
+      // Real mechanism behind "the role transition takes effect
+      // immediately" — when the client calls useSession().update()
+      // after matriculation, re-read the user's CURRENT roles from the
+      // store rather than trusting the roles captured at original
+      // login. This is what lets an Applicant become a Student without
+      // signing out and back in.
+      if (trigger === "update" && token.email) {
+        const { findUserByEmail } = await import("./users");
+        const fresh = findUserByEmail(token.email);
+        if (fresh) token.roles = fresh.roles;
       }
       return token;
     },
