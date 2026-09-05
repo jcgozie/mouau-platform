@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import EmergencyBanner from "@/components/EmergencyBanner";
+import AuthProvider from "@/components/AuthProvider";
 
 export const metadata: Metadata = {
   title: "MOUAU | Michael Okpara University of Agriculture, Umudike",
@@ -45,14 +46,16 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <EmergencyBanner />
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-forest focus:text-paper focus:px-4 focus:py-2 focus:rounded"
-        >
-          Skip to main content
-        </a>
-        {children}
+        <AuthProvider>
+          <EmergencyBanner />
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-forest focus:text-paper focus:px-4 focus:py-2 focus:rounded"
+          >
+            Skip to main content
+          </a>
+          {children}
+        </AuthProvider>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}

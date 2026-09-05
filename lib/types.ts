@@ -326,3 +326,38 @@ export interface DirectoryEntry {
   href: string;
   meta: string;
 }
+
+/**
+ * STAGE 7 ADDITIONS — Central SSO/MFA & Portal Shells
+ * ----------------------------------------------------------------
+ * Base persona roles plus administrative roles layered on top (not
+ * separate accounts) — a Person can hold more than one role over time
+ * (a Student becomes Alumni without a new account), per the spec.
+ */
+
+export type BaseRole = "Applicant" | "Student" | "Sponsor" | "Staff" | "Researcher" | "Alumni" | "Partner";
+export type AdminRole = "ContentEditor" | "Approver" | "SystemAdministrator";
+export type Role = BaseRole | AdminRole;
+
+export interface PlatformUser {
+  id: string;
+  name: string;
+  email: string;
+  passwordHash: string;
+  roles: Role[];
+  mfaEnabled: boolean;
+  mfaSecret?: string;
+  createdAt: string;
+}
+
+export type AuditAction =
+  | "login_success" | "login_failed" | "mfa_challenge_passed" | "mfa_challenge_failed"
+  | "mfa_enabled" | "logout" | "account_registered" | "role_assigned" | "role_check_denied";
+
+export interface AuditLogEntry {
+  id: string;
+  action: AuditAction;
+  actorEmail: string;
+  detail: string;
+  timestamp: string;
+}

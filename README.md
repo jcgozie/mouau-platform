@@ -225,3 +225,52 @@ Technology" vs "ICT Directorate"). Both now read from one source,
   Ursula Ngozi Akanwa's real photo and name — `LeadershipProfile` gained
   an optional `imageUrl` field, rendered only when present so the other
   two leadership entries (still placeholders) are unaffected.
+
+## Stage 7 — Central SSO/MFA & Portal Shells
+
+Real authentication, not a mockup: **NextAuth (Credentials + JWT)**,
+**bcrypt** password hashing, **otplib** TOTP-based MFA, and a **Next.js
+middleware** enforcing RBAC server-side on every protected route.
+
+- `/login` — one shared login for all seven personas + admin roles.
+  Handles the real MFA challenge (server returns `MFA_REQUIRED`, the form
+  reveals the code field — not a client-side guess).
+- `middleware.ts` + `lib/auth/roleAccess.ts` — real, tested RBAC:
+  - Unauthenticated request to `/portals/student` → `307` to `/login`
+  - Wrong-role request (Student → `/portals/staff`) → **`403`**, verified
+  - Retrofit: Stage 6's Governance Review page (`/directorates/admin`),
+    previously open to anyone with an honest "no login gate yet" caveat,
+    is now actually restricted to `Approver`/`SystemAdministrator`.
+- **Real MFA, verified end-to-end**: logged in as `staff@mouau.edu.ng`
+  using the actual current TOTP code (fetched from `/demo-mfa-code`, a
+  clearly-labeled test-only helper — a real deployment never shows a code
+  on a public page); an invalid code was correctly rejected.
+- `/register` + `app/api/register/route.ts` — self-registration limited
+  to Sponsor/Alumni/Partner only, least-privilege by default (exactly the
+  requested base role, nothing elevated). Verified: attempting to
+  self-register as Staff is rejected with a 400.
+- `/account` — real MFA enrollment: generates a genuine TOTP secret +
+  scannable QR code, and only persists it once the person proves they
+  captured it by entering a valid code back (an interrupted setup can't
+  silently half-enable MFA).
+- `/portals` — server-side role router; shows a picker only when an
+  account holds more than one portal-eligible role (e.g. Staff +
+  Researcher), rather than guessing.
+- `/portals/{applicant,student,sponsor,staff,researcher,alumni,partner}` —
+  one shared `PortalShell` layout, honest empty-state dashboards pointing
+  at the stage that builds their real content.
+- `/portals/admin` — the **real** audit log (`lib/auth/auditLog.ts`),
+  logging every login success/failure, MFA check, and registration.
+  **Bug found and fixed during testing**: this page was originally
+  statically prerendered at build time, freezing the audit log at
+  whatever it contained then (empty) — the same class of mistake as
+  Stage 1's build-time self-fetch bug. Fixed with `export const dynamic
+  = "force-dynamic"`; re-verified live events now appear correctly.
+
+**Documented limitations, not hidden ones**: user store and audit log
+are in-memory (reset on restart — same pattern as Stage 6's ticket
+store; production needs Postgres). `otplib` is pinned to the deprecated
+v12 API rather than v13's rewritten interface — a real migration should
+move to v13 or a maintained alternative. No real external IdP
+(Keycloak/OIDC) is connected — this demonstrates the RBAC/MFA mechanics
+for real, it doesn't replace a production identity provider.
