@@ -33,6 +33,7 @@ function seed(id: string, name: string, email: string, roles: Role[], mfaEnabled
 
 export const userStore: PlatformUser[] = [
   seed("u1", "Amaka Applicant", "applicant@example.com", ["Applicant"], false),
+  seed("u1b", "Bayo Applicant", "applicant2@example.com", ["Applicant"], false),
   seed("u2", "Chidi Student", "student@example.com", ["Student"], false),
   seed("u3", "Ronke Sponsor", "sponsor@example.com", ["Sponsor"], false),
   seed("u4", "Emeka Staff", "staff@mouau.edu.ng", ["Staff"], true),

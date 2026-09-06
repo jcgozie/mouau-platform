@@ -381,3 +381,50 @@ transcript, clearance, graduation stores + the grade-point scale),
 API routes for register/assess/moderate/senate-approve/transcript-
 request/verify-transcript/clearance-update/graduate, and Student- and
 Staff-facing pages for every one of the above.
+
+## Stage 9 — Sponsor/Parent/Guardian Portal
+
+The first stage where the central risk is privacy, not just
+functionality — tested accordingly, with the cross-student isolation
+scenario as the centerpiece rather than an afterthought.
+
+**Verified end-to-end, with two independently matriculated students**
+(`scripts/matriculate.sh` — a reusable helper for this and future
+testing) **and one sponsor linked to both**:
+
+- Sponsor requesting a link by matric number creates a `pending` link
+  with every category **false** by default — verified the sponsor cannot
+  access any data while pending (`403`).
+- Student A approved with **only Academic granted**, Financial explicitly
+  withheld. The sponsor's fetched response for Student A contains an
+  `academic` key but genuinely **no `financial` key at all** — not
+  present-but-empty, not hidden in the UI only. This matches the spec's
+  specific requirement that withheld categories are "genuinely absent."
+- Student B's link was **left pending, never approved** — the sponsor's
+  attempt to fetch Student B's data (while holding an active, approved
+  link to Student A) was correctly blocked (`403`). This is the actual
+  cross-student leakage test the spec calls out as "the most likely real
+  bug in this stage."
+- **Revocation takes effect immediately**: access succeeded before
+  revoking, then the identical request immediately after revocation was
+  blocked — no delay, no stale cached permission.
+- Both the sponsor-initiated (`/api/sponsor/request-link`) and
+  student-initiated (`/api/sponsor/invite`) paths end in the same
+  `pending` state requiring the same separate approval step — being
+  student-invited does not fast-track activation.
+
+**Consent audit** (`lib/sponsor/store.ts`'s `logConsentEvent`) logs every
+request, invitation, approval, revocation, and category-level data
+access — visible for a future admin view, not yet surfaced in its own UI
+this pass (a reasonable follow-up, not a hidden gap).
+
+**Honest boundary**: Financial category exists as a real permission a
+student can grant, but the data behind it is a stub — Stage 14's finance
+engine doesn't exist yet. A sponsor who is granted Financial access sees
+an explicit "not available yet" note, not fabricated numbers.
+
+### New in this stage
+`lib/sponsor/store.ts` (SponsorLink + ConsentAuditEntry stores), API
+routes for request-link/invite/approve/revoke/student-data, Sponsor
+portal pages (request form, link list, per-student view), Student's
+`/portals/student/sponsors` consent management page.

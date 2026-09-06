@@ -485,3 +485,43 @@ export interface GraduationRecord {
   convocationSession: string;
   graduatedAt: string;
 }
+
+/**
+ * STAGE 9 ADDITIONS — Sponsor/Parent/Guardian Portal
+ * ----------------------------------------------------------------
+ * Consent is Student-controlled, full stop. Every category defaults to
+ * OFF. A SponsorLink is never active until the Student explicitly
+ * approves it — there is deliberately no code path that activates a
+ * link any other way, including the student-invited path.
+ */
+
+export type SponsorLinkStatus = "pending" | "active" | "revoked";
+export type ConsentInitiator = "sponsor" | "student";
+
+export interface SponsorPermissions {
+  academic: boolean;
+  financial: boolean;
+  alerts: boolean;
+  messaging: boolean;
+}
+
+export interface SponsorLink {
+  id: string;
+  sponsorEmail: string;
+  studentEmail: string;
+  status: SponsorLinkStatus;
+  initiatedBy: ConsentInitiator;
+  permissions: SponsorPermissions;
+  requestedAt: string;
+  approvedAt?: string;
+  revokedAt?: string;
+}
+
+export interface ConsentAuditEntry {
+  id: string;
+  sponsorLinkId: string;
+  action: "requested" | "invited" | "approved" | "revoked" | "data_accessed";
+  category?: keyof SponsorPermissions;
+  actorEmail: string;
+  timestamp: string;
+}

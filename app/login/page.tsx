@@ -94,6 +94,7 @@ function LoginForm() {
         <div className="mt-8 rounded-sm border border-sage bg-sage-dim px-4 py-4 text-xs text-ink/60">
           <p className="font-medium text-ink">Demo accounts (password: Passw0rd!)</p>
           <ul className="mt-2 space-y-0.5 font-mono">
+            <li>applicant@example.com / applicant2@example.com (Applicant)</li>
             <li>student@example.com</li>
             <li>sponsor@example.com</li>
             <li>staff@mouau.edu.ng (MFA — see /demo-mfa-code)</li>

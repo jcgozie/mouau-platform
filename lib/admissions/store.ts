@@ -14,6 +14,10 @@ export function findStudentRecordByEmail(email: string): StudentMasterRecord | u
   return studentRecordStore.find((s) => s.studentEmail.toLowerCase() === email.toLowerCase());
 }
 
+export function findStudentRecordByMatric(matricNumber: string): StudentMasterRecord | undefined {
+  return studentRecordStore.find((s) => s.matricNumber.toLowerCase() === matricNumber.toLowerCase());
+}
+
 // Deterministic-looking but real: MOUAU/<session>/<college-acronym>/<sequence>
 // Never reused — sequence is global across the whole store, matching
 // the real-world requirement that a matric number is unique forever,
