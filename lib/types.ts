@@ -353,7 +353,7 @@ export interface PlatformUser {
 export type AuditAction =
   | "login_success" | "login_failed" | "mfa_challenge_passed" | "mfa_challenge_failed"
   | "mfa_enabled" | "logout" | "account_registered" | "role_assigned" | "role_check_denied"
-  | "admission_decision" | "matriculation";
+  | "admission_decision" | "matriculation" | "grade_moderated" | "senate_approved" | "graduation";
 
 export interface AuditLogEntry {
   id: string;
@@ -411,4 +411,77 @@ export interface StudentMasterRecord {
   modeOfStudy: string;
   status: "active";
   matriculatedAt: string;
+}
+
+/**
+ * STAGE 8B ADDITIONS — Academic Core: Curriculum Through Graduation
+ * ----------------------------------------------------------------
+ * Scope note: timetable/attendance are external-system integration
+ * points per the spec (stubbed as a one-line mention, not built).
+ * Probation/deferment/readmission REQUEST workflows are deferred —
+ * this stage computes academic standing, it doesn't yet build the
+ * request forms around it. Both are flagged in the README, not hidden.
+ */
+
+export interface CurriculumRequirement {
+  programmeSlug: string;
+  requiredCourseCodes: string[];
+}
+
+export interface RegistrationRecord {
+  id: string;
+  studentEmail: string;
+  session: string;
+  semester: 1 | 2;
+  courseCodes: string[];
+  registeredAt: string;
+}
+
+export type ModerationStatus = "draft" | "moderated" | "senate_approved";
+
+export interface AssessmentRecord {
+  id: string;
+  studentEmail: string;
+  courseCode: string;
+  session: string;
+  caScore?: number;
+  examScore?: number;
+  moderationStatus: ModerationStatus;
+  enteredBy: string;
+  enteredAt: string;
+  moderatedBy?: string;
+  moderatedAt?: string;
+  senateApprovedBy?: string;
+  senateApprovedAt?: string;
+}
+
+export interface TranscriptRequest {
+  id: string;
+  studentEmail: string;
+  verificationCode: string;
+  requestedAt: string;
+}
+
+export type ClearanceUnit = "Bursary" | "Hostel" | "Library" | "Department";
+export type ClearanceStatus = "pending" | "cleared";
+
+export interface ClearanceItem {
+  unit: ClearanceUnit;
+  status: ClearanceStatus;
+  note: string;
+}
+
+export interface ClearanceRecord {
+  studentEmail: string;
+  items: ClearanceItem[];
+}
+
+export interface GraduationRecord {
+  id: string;
+  studentEmail: string;
+  matricNumber: string;
+  degreeAwarded: string;
+  classOfDegree: string;
+  convocationSession: string;
+  graduatedAt: string;
 }

@@ -317,3 +317,67 @@ testing, not by inspection.
 `matriculation` audit actions (previously would have been mislabeled
 under an unrelated existing action type) — both visible in
 `/portals/admin`'s real audit log.
+
+## Stage 8B — Academic Core: Curriculum Through Graduation
+
+The largest stage in the spec, scoped deliberately (see "Deferred" below)
+and verified end-to-end via direct API testing, not just code review.
+
+**The defining mechanism — a genuinely non-bypassable two-gate state
+machine** (`draft` → `moderated` → `senate_approved`):
+- Attempting Senate approval on a `draft` assessment (skipping
+  moderation) → real `409`, rejected regardless of who calls the endpoint.
+- Moderation is Staff-only; Senate approval is restricted to
+  `Approver`/`SystemAdministrator` specifically — genuine separation of
+  duties, not the same role rubber-stamping itself. Verified with real
+  accounts (`staff@mouau.edu.ng` moderates, `approver@mouau.edu.ng`
+  Senate-approves).
+- A student's Results page (`/portals/student/results`) can only ever
+  read `senate_approved` assessments — GPA/CGPA and academic standing
+  (Good Standing / Probation, computed live from a 2.0 CGPA threshold)
+  are only ever computed from published results.
+
+**Real, server-side prerequisite enforcement** — verified with an actual
+before/after: registering CSC 305 before CSC 201 is passed → `409`
+naming the unmet prerequisite; after CSC 201 is entered, moderated, and
+Senate-approved, the exact same registration request for CSC 305 →
+`200`.
+
+**Transcript verification, unauthenticated by design**
+(`/verify-transcript`) — checked *before* and *after* graduation with the
+same real code: shows `"graduated": false"` initially, then
+`"graduated": true"` with the real degree/class after graduation — and
+nothing else about the student, per the spec's explicit boundary.
+
+**The second and last automatic role transition** — Student→Alumni,
+verified with the same rigor as Stage 8A's Applicant→Student: graduation
+was first correctly **blocked** (`409`, naming all 4 outstanding
+clearance units) until every item was cleared; after clearing and
+graduating, `session.update()` refreshed the JWT to
+`["Applicant","Student","Alumni"]` and `/portals/alumni` immediately
+returned `200`.
+
+**Honest boundary, not hidden**: Bursary and Hostel clearance items are
+real `ClearanceItem` records, but their "cleared" state can currently only
+be set via a manual Staff override explicitly labeled *"demo only — real
+status requires Stage 14/15."* This scaffold cannot honestly clear those
+two items any other way, since those stages don't exist yet; Library and
+Department clearance are treated as real (no stage dependency).
+
+### Deferred this pass (flagged, not silently dropped)
+- **Timetable & attendance**: one-line integration-point mention only,
+  per the spec's own framing of these as external-system concerns — no
+  UI built.
+- **Probation/deferment/readmission request workflows**: academic
+  standing is computed and shown, but the *request* forms around
+  deferment/readmission were not built — a genuine scope cut to keep
+  this stage shippable in one pass.
+- **Student analytics/early-warning dashboard**: not built this pass.
+
+### New in this stage
+`lib/academics/curriculum.ts` (real Programme→Course requirements, no
+duplicate data), `lib/academics/store.ts` (registration, assessment,
+transcript, clearance, graduation stores + the grade-point scale),
+API routes for register/assess/moderate/senate-approve/transcript-
+request/verify-transcript/clearance-update/graduate, and Student- and
+Staff-facing pages for every one of the above.

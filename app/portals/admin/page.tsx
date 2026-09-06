@@ -15,6 +15,9 @@ const ACTION_LABEL: Record<string, string> = {
   role_check_denied: "Access denied by role check",
   admission_decision: "Admission decision recorded",
   matriculation: "Student matriculated",
+  grade_moderated: "Grade moderated",
+  senate_approved: "Senate approved",
+  graduation: "Student graduated",
 };
 
 export default function AdminPortalPage() {

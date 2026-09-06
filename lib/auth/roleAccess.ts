@@ -7,6 +7,11 @@ export const ROUTE_ROLE_REQUIREMENTS: { prefix: string; roles: Role[] }[] = [
   { prefix: "/portals/applicant", roles: ["Applicant"] },
   { prefix: "/portals/student", roles: ["Student"] },
   { prefix: "/portals/sponsor", roles: ["Sponsor"] },
+  // More specific than "/portals/staff" below — must come first so
+  // Array.find() matches this rule, not the broader Staff one, for
+  // this one sub-path. Senate approval is deliberately a different
+  // role than the departmental moderation Staff performs.
+  { prefix: "/portals/staff/senate-approval", roles: ["Approver", "SystemAdministrator"] },
   { prefix: "/portals/staff", roles: ["Staff"] },
   { prefix: "/portals/researcher", roles: ["Researcher"] },
   { prefix: "/portals/alumni", roles: ["Alumni"] },
