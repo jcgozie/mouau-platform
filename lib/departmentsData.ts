@@ -9,6 +9,7 @@ export const mockDepartments: Department[] = [
     collegeSlug: "college-of-agriculture",
     name: "Crop Science",
     hod: "Dr. (HOD, Crop Science)",
+    hodStaffEmail: "researcher@mouau.edu.ng",
     overview: "Teaching and research in crop physiology, breeding, and production systems.",
     staff: [
       { id: "s1", name: "Dr. A. Nwosu", title: "Senior Lecturer" },

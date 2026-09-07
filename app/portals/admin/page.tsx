@@ -18,6 +18,10 @@ const ACTION_LABEL: Record<string, string> = {
   grade_moderated: "Grade moderated",
   senate_approved: "Senate approved",
   graduation: "Student graduated",
+  leave_decided: "Leave decision recorded",
+  appraisal_access_denied: "Appraisal access denied",
+  retirement_alert_computed: "Retirement alert computed",
+  promotion_decided: "Promotion/conversion decision recorded",
 };
 
 export default function AdminPortalPage() {

@@ -50,6 +50,7 @@ export interface Department {
   collegeSlug: string;
   name: string;
   hod: string;
+  hodStaffEmail?: string; // resolves to a real StaffProfile (Stage 10) when set; falls back to the placeholder `hod` text otherwise
   overview: string;
   staff: StaffStub[];
 }
@@ -196,6 +197,7 @@ export interface Researcher {
   bio: string;
   contactPublished: boolean; // opt-in flag — never default contact info to visible
   contactEmail?: string;
+  staffEmail?: string; // resolves to a real StaffProfile (Stage 10) when set
 }
 
 export interface ResearchProject {
@@ -300,6 +302,7 @@ export interface Directorate extends GovernanceMeta {
   mandate: string;
   leadTitle: string;
   leadName: string;
+  leadStaffEmail?: string; // resolves to a real StaffProfile (Stage 10) when set
   services: DirectorateService[];
   forms: { name: string; note: string }[];
   contactEmail: string;
@@ -353,7 +356,8 @@ export interface PlatformUser {
 export type AuditAction =
   | "login_success" | "login_failed" | "mfa_challenge_passed" | "mfa_challenge_failed"
   | "mfa_enabled" | "logout" | "account_registered" | "role_assigned" | "role_check_denied"
-  | "admission_decision" | "matriculation" | "grade_moderated" | "senate_approved" | "graduation";
+  | "admission_decision" | "matriculation" | "grade_moderated" | "senate_approved" | "graduation"
+  | "leave_decided" | "appraisal_access_denied" | "retirement_alert_computed" | "promotion_decided";
 
 export interface AuditLogEntry {
   id: string;
@@ -524,4 +528,74 @@ export interface ConsentAuditEntry {
   category?: keyof SponsorPermissions;
   actorEmail: string;
   timestamp: string;
+}
+
+/**
+ * STAGE 10 ADDITIONS — Staff/HR Self-Service Portal
+ * ----------------------------------------------------------------
+ * StaffProfile is the single source Stage 3's Department HOD field and
+ * Stage 6's Directorate lead field now resolve to — replacing the
+ * placeholder strings both stages shipped with ("Dr. (HOD, Crop
+ * Science)", "(Director, ICT)"), not adding a second copy alongside them.
+ */
+
+export type EmploymentStatus = "active" | "on_leave" | "suspended" | "retired";
+
+export interface StaffProfile {
+  staffId: string;
+  email: string; // matches the PlatformUser email — one identity, not a second account
+  name: string;
+  designation: string;
+  unitType: "college" | "centre" | "directorate" | "department";
+  unitSlug: string;
+  reportingToEmail?: string; // the real reporting line — never a hardcoded approver
+  employmentStatus: EmploymentStatus;
+  appointmentDate: string;
+  officialEmail: string;
+}
+
+export type LeaveStatus = "pending" | "approved" | "rejected";
+
+export interface LeaveRequest {
+  id: string;
+  staffEmail: string;
+  leaveType: string;
+  startDate: string;
+  endDate: string;
+  status: LeaveStatus;
+  approverEmail: string; // captured from the real reporting line at submission time
+  decisionAt?: string;
+  decisionNote?: string;
+}
+
+export interface TrainingRecord {
+  id: string;
+  staffEmail: string;
+  name: string;
+  provider: string;
+  completedDate: string;
+}
+
+export type AppraisalStatus = "draft" | "submitted" | "reviewed" | "finalized";
+
+export interface AppraisalRecord {
+  id: string;
+  staffEmail: string;
+  appraiserEmail: string;
+  period: string;
+  staffComments?: string;
+  appraiserComments?: string;
+  status: AppraisalStatus;
+}
+
+export type PromotionRequestStatus = "pending" | "approved" | "rejected";
+
+export interface PromotionRequest {
+  id: string;
+  staffEmail: string;
+  requestType: string;
+  requestedAt: string;
+  status: PromotionRequestStatus;
+  approverEmail: string;
+  decisionAt?: string;
 }

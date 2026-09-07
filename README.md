@@ -428,3 +428,53 @@ an explicit "not available yet" note, not fabricated numbers.
 routes for request-link/invite/approve/revoke/student-data, Sponsor
 portal pages (request form, link list, per-student view), Student's
 `/portals/student/sponsors` consent management page.
+
+## Stage 10 — Staff/HR Self-Service Portal
+
+**The retrofit the spec calls for, done for real**: Stage 3's Department
+HOD field and Stage 6's Directorate lead field were placeholder strings
+("Dr. (HOD, Crop Science)", "(Director, ICT)") since the day they
+shipped. Both now resolve to a real `StaffProfile` record when linked —
+verified by fetching the live pages: Crop Science's HOD renders "Dr.
+Nkechi Researcher — Senior Lecturer / Head of Department", ICT's
+Director renders "System Admin". Also discovered and fixed a real gap:
+the `researcher@mouau.edu.ng` demo login account had no corresponding
+Researcher record in Stage 4's data at all — added one, linked to her
+Staff Profile.
+
+**Real reporting-line routing, not a hardcoded approver** — verified
+with three real accounts: Emeka Staff requested leave, which captured
+`approverEmail: "approver@mouau.edu.ng"` automatically from his actual
+Staff Profile. System Admin — a valid Staff/SystemAdministrator account,
+but *not* Emeka's real approver — was correctly blocked (`403`) from
+deciding it. Only Bisi Approver, his genuine reporting line, could act.
+
+**Appraisal access restriction, tested from all four angles**:
+1. Bisi (Emeka's real appraiser) can initiate his appraisal.
+2. Bisi is correctly blocked from appraising System Admin — not her
+   direct report, despite him outranking her in the hierarchy.
+3. Emeka can read his own appraisal.
+4. System Admin — an uninvolved third party who happens to hold a valid
+   Staff role — is blocked from reading Emeka's appraisal. This is the
+   literal test of the spec's "personnel data, not broadly readable even
+   by other staff with portal access" requirement.
+
+**Retirement alert is inspectable, not silent** — computed live from a
+35-year-service rule against real appointment dates, rendered on
+`/portals/staff/profile`, and independently confirmed in the real audit
+log ("Due 2028-09-01 — 33 years served") the moment it's shown, not on
+an invisible background schedule.
+
+### New in this stage
+`lib/hr/store.ts` (StaffProfile with a real 3-level reporting hierarchy,
+Leave/Training/Appraisal/Promotion stores, the retirement-alert
+calculation), API routes for leave request/decide, appraisal
+create/read, training log, promotion request/decide, and Staff-facing
+pages for all of the above.
+
+### Deferred this pass
+A full staff directory / org-chart view wasn't built — the retrofit
+covers the two touchpoints the spec named explicitly (Department HOD,
+Directorate lead); extending it to every staff stub across the platform
+(e.g., other Department staff lists) is a reasonable next increment, not
+done here.

@@ -2,6 +2,20 @@ import type { Researcher, ResearchProject, Publication, Facility, ResearchData }
 
 const researchers: Researcher[] = [
   {
+    id: "r0",
+    slug: "n-researcher",
+    name: "Dr. Nkechi Researcher",
+    role: "Senior Lecturer / Head of Department",
+    unitType: "department",
+    unitSlug: "crop-science",
+    unitName: "Crop Science",
+    orcid: "0000-0002-7777-8888",
+    bio: "Heads the Crop Science department; researches integrated pest management in staple crops.",
+    contactPublished: true,
+    contactEmail: "researcher@mouau.edu.ng",
+    staffEmail: "researcher@mouau.edu.ng",
+  },
+  {
     id: "r1",
     slug: "a-nwosu",
     name: "Dr. A. Nwosu",

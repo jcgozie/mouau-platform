@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import { mockHomepageData } from "@/lib/mockData";
 import { mockDepartments } from "@/lib/departmentsData";
 import { mockStudyData } from "@/lib/studyData";
+import { findStaffProfile } from "@/lib/hr/store";
 
 export function generateStaticParams() {
   return mockDepartments.map((d) => ({ slug: d.collegeSlug, deptSlug: d.slug }));
@@ -43,7 +44,14 @@ export default function DepartmentProfilePage({
             <h1 className="mt-2 max-w-3xl font-display text-3xl font-medium text-forest md:text-5xl">
               {department.name}
             </h1>
-            <p className="mt-3 text-ink/70">HOD: {department.hod}</p>
+            <p className="mt-3 text-ink/70">
+              HOD: {department.hodStaffEmail
+                ? (() => {
+                    const staff = findStaffProfile(department.hodStaffEmail!);
+                    return staff ? `${staff.name} — ${staff.designation}` : department.hod;
+                  })()
+                : department.hod}
+            </p>
             <p className="mt-4 max-w-prose text-ink/75">{department.overview}</p>
           </div>
         </section>

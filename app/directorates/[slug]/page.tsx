@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { mockDirectorates } from "@/lib/directoratesData";
+import { findStaffProfile } from "@/lib/hr/store";
 
 export function generateStaticParams() {
   return mockDirectorates.map((d) => ({ slug: d.slug }));
@@ -27,7 +28,11 @@ export default function DirectorateProfilePage({ params }: { params: { slug: str
             <h1 className="mt-2 max-w-3xl font-display text-3xl font-medium text-forest md:text-5xl">
               {directorate.name}
             </h1>
-            <p className="mt-3 text-ink/70">{directorate.leadTitle}: {directorate.leadName}</p>
+            <p className="mt-3 text-ink/70">
+              {directorate.leadTitle}: {directorate.leadStaffEmail
+                ? (findStaffProfile(directorate.leadStaffEmail)?.name ?? directorate.leadName)
+                : directorate.leadName}
+            </p>
             <p className="mt-4 max-w-prose text-ink/75">{directorate.mandate}</p>
           </div>
         </section>

@@ -20,7 +20,7 @@ export const mockDirectorates: Directorate[] = [
   {
     id: "dir2", slug: "ict", name: "Information & Communication Technology", category: "Directorate",
     mandate: "Operates and secures MOUAU's digital infrastructure, including this platform.",
-    leadTitle: "Director", leadName: "(Director, ICT)",
+    leadTitle: "Director", leadName: "(Director, ICT)", leadStaffEmail: "admin@mouau.edu.ng",
     services: [
       { name: "Staff email/account request", slaDays: 2, description: "Provisioning of official email and system access." },
       { name: "Network/systems fault report", slaDays: 1, description: "Campus network and systems incident response." },
