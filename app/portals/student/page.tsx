@@ -12,6 +12,7 @@ const LINKS = [
   { href: "/portals/student/transcript", title: "Transcript Requests", note: "Request and verify official transcripts" },
   { href: "/portals/student/clearance", title: "Clearance", note: "Bursary, Hostel, Library, Department" },
   { href: "/portals/student/sponsors", title: "Sponsors", note: "Manage who can see your academic progress" },
+  { href: "/portals/student/research", title: "Postgraduate Research", note: "For PG research students with a supervisor" },
 ];
 
 export default async function StudentPortalPage() {

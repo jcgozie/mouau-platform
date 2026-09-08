@@ -357,7 +357,8 @@ export type AuditAction =
   | "login_success" | "login_failed" | "mfa_challenge_passed" | "mfa_challenge_failed"
   | "mfa_enabled" | "logout" | "account_registered" | "role_assigned" | "role_check_denied"
   | "admission_decision" | "matriculation" | "grade_moderated" | "senate_approved" | "graduation"
-  | "leave_decided" | "appraisal_access_denied" | "retirement_alert_computed" | "promotion_decided";
+  | "leave_decided" | "appraisal_access_denied" | "retirement_alert_computed" | "promotion_decided"
+  | "ethics_review_decided" | "proposal_promoted" | "role_granted";
 
 export interface AuditLogEntry {
   id: string;
@@ -598,4 +599,94 @@ export interface PromotionRequest {
   status: PromotionRequestStatus;
   approverEmail: string;
   decisionAt?: string;
+}
+
+/**
+ * STAGE 11 ADDITIONS — Researcher Portal
+ * ----------------------------------------------------------------
+ * An approved proposal is what creates the real, public Stage 4
+ * Research Project — not a separate manual re-entry. Where ethics
+ * review is required, it's a genuine gate: no path promotes a proposal
+ * to a public project without an approved EthicsReview, mirroring the
+ * rigor of Stage 8B's moderation->Senate-approval gate.
+ */
+
+export type ProposalStatus = "submitted" | "ethics_review" | "approved" | "rejected";
+
+export interface ResearchProposal {
+  id: string;
+  proposingResearcherEmail: string;
+  title: string;
+  abstract: string;
+  funder?: string;
+  collaboratorEmails: string[];
+  requiresEthicsReview: boolean;
+  status: ProposalStatus;
+  linkedProjectSlug?: string;
+  submittedAt: string;
+}
+
+export type EthicsReviewStatus = "pending" | "approved" | "approved_with_conditions" | "rejected";
+
+export interface EthicsReview {
+  id: string;
+  proposalId: string;
+  reviewerEmail: string;
+  status: EthicsReviewStatus;
+  conditions?: string;
+  decisionAt?: string;
+}
+
+export type GrantStatus = "active" | "closed" | "reporting_overdue";
+
+export interface Grant {
+  id: string;
+  projectSlug: string;
+  funder: string;
+  amount: number;
+  currency: string;
+  awardDate: string;
+  reportingDeadline: string;
+  status: GrantStatus;
+}
+
+export type DatasetAccessLevel = "open" | "restricted" | "embargoed";
+
+export interface ResearchDataset {
+  id: string;
+  projectSlug: string;
+  title: string;
+  description: string;
+  accessLevel: DatasetAccessLevel;
+  repositoryUrl?: string;
+  doi?: string;
+}
+
+export type PatentFilingStatus = "draft" | "filed" | "granted" | "rejected";
+
+export interface PatentSubmission {
+  id: string;
+  inventorEmails: string[];
+  title: string;
+  filingStatus: PatentFilingStatus;
+  filingDate: string;
+  relatedProjectSlug?: string;
+  licensingContactEmail?: string;
+}
+
+export type MilestoneStatus = "pending" | "in_progress" | "completed";
+
+export interface PostgradMilestone {
+  name: string;
+  dueDate: string;
+  status: MilestoneStatus;
+  completedDate?: string;
+}
+
+export interface PostgradTracking {
+  id: string;
+  studentEmail: string;
+  supervisorEmail: string;
+  researchTopic: string;
+  milestones: PostgradMilestone[];
 }

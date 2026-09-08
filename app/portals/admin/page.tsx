@@ -22,6 +22,9 @@ const ACTION_LABEL: Record<string, string> = {
   appraisal_access_denied: "Appraisal access denied",
   retirement_alert_computed: "Retirement alert computed",
   promotion_decided: "Promotion/conversion decision recorded",
+  ethics_review_decided: "Ethics review decided",
+  proposal_promoted: "Proposal promoted to public project",
+  role_granted: "Role granted",
 };
 
 export default function AdminPortalPage() {

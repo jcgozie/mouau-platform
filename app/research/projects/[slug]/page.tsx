@@ -2,19 +2,26 @@ import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { mockResearchData } from "@/lib/researchData";
+import { allResearchProjects } from "@/lib/researcher-portal/store";
+
+export const dynamic = "force-dynamic"; // new researcher-promoted slugs must render, not 404
+export const dynamicParams = true;
 
 export function generateStaticParams() {
+  // Only the static seed projects are known at build time — anything
+  // an approved proposal promotes later renders on-demand, per
+  // dynamicParams above.
   return mockResearchData.projects.map((p) => ({ slug: p.slug }));
 }
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
-  const project = mockResearchData.projects.find((p) => p.slug === params.slug);
+  const project = allResearchProjects().find((p) => p.slug === params.slug);
   if (!project) return {};
   return { title: `${project.title} | MOUAU Research` };
 }
 
 export default function ProjectDetailPage({ params }: { params: { slug: string } }) {
-  const project = mockResearchData.projects.find((p) => p.slug === params.slug);
+  const project = allResearchProjects().find((p) => p.slug === params.slug);
   if (!project) notFound();
 
   const researchers = project.researcherSlugs

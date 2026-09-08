@@ -4,6 +4,7 @@ const LINKS = [
   { href: "/portals/staff/profile", title: "My Profile", note: "Employment record, reporting line, retirement status, training" },
   { href: "/portals/staff/leave", title: "Leave", note: "Request leave; approve requests routed to you" },
   { href: "/portals/staff/appraisal", title: "Appraisal", note: "Access-restricted to you and your real appraiser" },
+  { href: "/portals/staff/ethics-review", title: "Ethics Review", note: "Approver/SystemAdministrator only" },
   { href: "/portals/staff/admissions", title: "Admissions Review", note: "Stage 8A" },
   { href: "/portals/staff/assessments", title: "Enter Assessment Scores", note: "Stage 8B" },
   { href: "/portals/staff/moderation", title: "Moderation Queue", note: "Stage 8B" },

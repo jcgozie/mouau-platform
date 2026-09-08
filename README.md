@@ -478,3 +478,55 @@ covers the two touchpoints the spec named explicitly (Department HOD,
 Directorate lead); extending it to every staff stub across the platform
 (e.g., other Department staff lists) is a reasonable next increment, not
 done here.
+
+## Stage 11 — Researcher Portal
+
+The core mechanism — an approved proposal creates a real, public Stage 4
+Research Project — was tested with the same rigor as Stage 8B's gate,
+because the spec draws the exact same comparison.
+
+**The ethics-review gate, tested against all three real cases**:
+1. No ethics review on file at all → promotion blocked (`409`).
+2. An ethics review exists but its outcome is `rejected` → promotion
+   **still** blocked (`409`) — a review record existing isn't enough,
+   its outcome has to actually clear the bar.
+3. An `approved` ethics review on file → promotion succeeds, and the
+   resulting project was confirmed live on the **public, unauthenticated**
+   `/research/projects/[slug]` page immediately — no manual re-entry.
+
+The promoted project also correctly resolved the submitting researcher's
+real slug (`n-researcher`, Dr. Nkechi Researcher — the same person Stage
+10 linked as Crop Science's HOD) via her `staffEmail`/`contactEmail`
+link, rather than creating an orphaned or duplicate researcher entry.
+
+**Dataset access-level enforcement, verified with a real pair**: one
+`open` and one `restricted` dataset were registered against the same
+project; the public `/research/datasets` discovery page shows only the
+open one — the restricted one never reaches that code path at all
+(the API's `GET` handler filters server-side, so no page has to
+remember to filter correctly).
+
+**Postgraduate tracking, tested with a genuine dual-role account** — the
+non-negotiable the spec is most specific about: a fresh applicant was
+matriculated through the real Stage 8A/8B pipeline (real matric number,
+`MOUAU/2026-2027/CMAS/0001`), then granted the Researcher role via a new
+`SystemAdministrator`-only `/api/admin/assign-role` endpoint (itself
+audit-logged). Her real supervisor (Dr. Nkechi Researcher) started
+tracking and marked a milestone complete; the student's own
+`/portals/student/research` page — reached via her Student role, not a
+separate researcher identity — showed the identical update in real
+time. This is what "recognized via their existing Student record and
+Researcher role simultaneously" actually means, not just modeled.
+
+### New in this stage
+`lib/researcher-portal/store.ts` (proposals, ethics reviews, grants,
+datasets, patents, postgrad tracking, and the `researcherCreatedProjects`
+store merged into every public Stage 4 page via `allResearchProjects()`),
+API routes for proposal submit/ethics-review/approve, grants, datasets,
+postgrad-tracking, and a small real `assign-role` admin endpoint used to
+test the dual-role scenario honestly rather than faking it.
+
+### Deferred this pass
+Patent/IP submission has types and a store but no dedicated UI this
+pass — the Stage 4 public patents showcase remains a curated static list
+rather than reading from real submissions. A reasonable next increment.

@@ -3,11 +3,15 @@ import Footer from "@/components/Footer";
 import PageIntro from "@/components/PageIntro";
 import RowList from "@/components/RowList";
 import { mockResearchData } from "@/lib/researchData";
+import { allResearchProjects } from "@/lib/researcher-portal/store";
+
+export const dynamic = "force-dynamic"; // must include live researcher-promoted projects
 
 export const metadata = { title: "Research & Innovation | MOUAU" };
 
 export default function ResearchLandingPage() {
-  const { researchers, projects, publications } = mockResearchData;
+  const { researchers, publications } = mockResearchData;
+  const projects = allResearchProjects();
 
   return (
     <>
