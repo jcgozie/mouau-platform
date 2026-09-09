@@ -358,7 +358,8 @@ export type AuditAction =
   | "mfa_enabled" | "logout" | "account_registered" | "role_assigned" | "role_check_denied"
   | "admission_decision" | "matriculation" | "grade_moderated" | "senate_approved" | "graduation"
   | "leave_decided" | "appraisal_access_denied" | "retirement_alert_computed" | "promotion_decided"
-  | "ethics_review_decided" | "proposal_promoted" | "role_granted";
+  | "ethics_review_decided" | "proposal_promoted" | "role_granted"
+  | "donation_confirmed" | "mentoring_match_decided";
 
 export interface AuditLogEntry {
   id: string;
@@ -689,4 +690,63 @@ export interface PostgradTracking {
   supervisorEmail: string;
   researchTopic: string;
   milestones: PostgradMilestone[];
+}
+
+/**
+ * STAGE 12 ADDITIONS — Alumni & Giving Portal
+ * ----------------------------------------------------------------
+ * AlumniProfile reads Stage 8B's real GraduationRecord — degree, class,
+ * session are never re-collected here. Giving is honestly stubbed
+ * pending Stage 14's real Remita integration: donations record a real
+ * designation, but confirmation is a labeled manual demo action (same
+ * pattern as Stage 8B's Bursary/Hostel clearance override), not a real
+ * payment flow.
+ */
+
+export interface AlumniProfile {
+  email: string;
+  currentEmployer?: string;
+  currentRole?: string;
+  industry?: string;
+  careerNetworkVisibleToAlumni: boolean; // independent opt-ins, both default false
+  careerNetworkVisibleToStudents: boolean;
+  chapterSlugs: string[];
+}
+
+export interface Chapter {
+  slug: string;
+  name: string;
+  description: string;
+  leadershipEmail?: string;
+}
+
+export type MentoringMenteeType = "alumni" | "student";
+export type MentoringStatus = "requested" | "active" | "ended";
+
+export interface MentoringMatch {
+  id: string;
+  mentorEmail: string;
+  menteeEmail: string;
+  menteeType: MentoringMenteeType;
+  status: MentoringStatus;
+  areaOfInterest: string;
+}
+
+export type DonationStatus = "pending" | "confirmed";
+
+export interface Donation {
+  id: string;
+  donorEmail: string;
+  amount: number;
+  currency: string;
+  fundSlug: string;
+  status: DonationStatus;
+  date: string;
+}
+
+export interface GivingFund {
+  slug: string;
+  name: string;
+  purpose: string;
+  impactNarrative: string;
 }

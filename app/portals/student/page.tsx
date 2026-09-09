@@ -13,6 +13,8 @@ const LINKS = [
   { href: "/portals/student/clearance", title: "Clearance", note: "Bursary, Hostel, Library, Department" },
   { href: "/portals/student/sponsors", title: "Sponsors", note: "Manage who can see your academic progress" },
   { href: "/portals/student/research", title: "Postgraduate Research", note: "For PG research students with a supervisor" },
+  { href: "/portals/student/mentoring", title: "Mentoring", note: "Offers from alumni mentors" },
+  { href: "/portals/student/career-network", title: "Career Network", note: "Alumni who opted into student visibility" },
 ];
 
 export default async function StudentPortalPage() {

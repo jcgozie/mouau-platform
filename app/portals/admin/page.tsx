@@ -25,6 +25,8 @@ const ACTION_LABEL: Record<string, string> = {
   ethics_review_decided: "Ethics review decided",
   proposal_promoted: "Proposal promoted to public project",
   role_granted: "Role granted",
+  donation_confirmed: "Donation confirmed (demo override)",
+  mentoring_match_decided: "Mentoring match decided",
 };
 
 export default function AdminPortalPage() {

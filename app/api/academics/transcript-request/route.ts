@@ -6,8 +6,9 @@ import crypto from "crypto";
 
 export async function POST() {
   const session = await getServerSession(authOptions);
-  if (!session || !session.user.roles.includes("Student")) {
-    return NextResponse.json({ error: "Only Student accounts can request a transcript" }, { status: 403 });
+  const canRequest = session?.user.roles.some((r) => r === "Student" || r === "Alumni");
+  if (!session || !canRequest) {
+    return NextResponse.json({ error: "Only Student or Alumni accounts can request a transcript" }, { status: 403 });
   }
 
   const verificationCode = crypto.randomBytes(6).toString("hex").toUpperCase();

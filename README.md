@@ -530,3 +530,57 @@ test the dual-role scenario honestly rather than faking it.
 Patent/IP submission has types and a store but no dedicated UI this
 pass — the Stage 4 public patents showcase remains a curated static list
 rather than reading from real submissions. A reasonable next increment.
+
+## Stage 12 — Alumni & Giving Portal
+
+Since Stage 14 (Finance/Payments) doesn't exist yet, Giving is honestly
+stubbed the same way Fees have been throughout — but the one thing that
+actually matters (fund designation genuinely reflecting in cumulative
+totals) was still tested for real, using the same labeled-manual-override
+pattern Stage 8B established for Bursary/Hostel clearance.
+
+**Zero re-collection, verified against real rendered HTML**: a student
+was matriculated, registered, and graduated through the genuine Stage
+8A/8B pipeline; her `/portals/alumni` page rendered "Pre-populated from
+your real Graduation record — nothing re-entered" followed by the real
+degree, class, session, and matric number — all sourced live from Stage
+8B's `GraduationRecord`, none of it re-typed into a Stage 12 form.
+
+**Fund designation, tested end to end**: a ₦50,000 donation designated
+to the VC Scholarship Fund showed ₦0 confirmed before Staff's demo
+confirmation and exactly **₦50,000 confirmed to date** immediately after
+— while the other two funds correctly stayed at ₦0. Designation isn't
+cosmetic here; it's computed live from real per-fund donation records.
+
+**The two career-network visibility opt-ins are genuinely independent**,
+verified by testing both sides of the same account at once: opted into
+"visible to students" but explicitly *not* "visible to alumni" — she was
+confirmed absent from `/portals/alumni/career-network` and confirmed
+present on `/portals/student/career-network`. Two separate toggles, two
+separately-enforced read paths, not one shared "public" switch.
+
+**Real reuse, not a parallel system**: `CredentialRequestClient` is one
+component used by both `/portals/student/transcript` and
+`/portals/alumni/credentials` — both call the exact same
+`/api/academics/transcript-request` endpoint from Stage 8B. Alumni
+status was added to that route's role check; no second transcript
+system was built.
+
+**Mentoring runs both directions**: an Alumni account can offer
+mentoring to either a fellow alumnus or a current student
+(`menteeType`), and the student side has its own inbox
+(`/portals/student/mentoring`) to accept or decline — current students
+genuinely benefit from this network, not only fellow graduates.
+
+### New in this stage
+`lib/alumni/store.ts` (AlumniProfile, funds, chapters, mentoring,
+donations, plus `cumulativeGivingForFund`), API routes for
+profile/chapters/mentoring/donations(+confirm), Alumni-side pages
+(dashboard, chapters, mentoring, giving, career network, credentials),
+Student-side additions (mentoring inbox, career network view), and a
+read-only Advancement CRM reporting page.
+
+### Deferred this pass
+No dedicated giving-history page for a donor to review their own past
+donations across funds — the giving page shows fund totals, not a
+personal donation ledger. A reasonable next increment.
