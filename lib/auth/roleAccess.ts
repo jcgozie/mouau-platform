@@ -13,6 +13,7 @@ export const ROUTE_ROLE_REQUIREMENTS: { prefix: string; roles: Role[] }[] = [
   // role than the departmental moderation Staff performs.
   { prefix: "/portals/staff/senate-approval", roles: ["Approver", "SystemAdministrator"] },
   { prefix: "/portals/staff/ethics-review", roles: ["Approver", "SystemAdministrator"] },
+  { prefix: "/portals/staff/patent-approval", roles: ["Approver", "SystemAdministrator"] },
   { prefix: "/portals/staff", roles: ["Staff"] },
   { prefix: "/portals/researcher", roles: ["Researcher"] },
   { prefix: "/portals/alumni", roles: ["Alumni"] },

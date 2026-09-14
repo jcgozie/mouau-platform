@@ -584,3 +584,57 @@ read-only Advancement CRM reporting page.
 No dedicated giving-history page for a donor to review their own past
 donations across funds — the giving page shows fund totals, not a
 personal donation ledger. A reasonable next increment.
+
+## Stage 13 — Partner/Industry Portal
+
+This stage also closed a gap explicitly flagged as deferred in Stage 11:
+Patent/IP submission had types and a store but no real approval flow, so
+Stage 4's public patents page was still a static list. Licensing Inquiry
+needed a genuine patent to reference, so that gap got fixed here rather
+than linking against fake data.
+
+**A real bug caught mid-testing, worth remembering for every future
+stage**: I edited a facility's seed data (`researchData.ts`) *after*
+running `npm run build`, then tested against `npm run start` — which
+serves the already-compiled `.next` bundle, not live source. The booking
+API kept routing to the old manager email until I rebuilt. Not an app
+bug, but a real testing-process mistake — always rebuild after any
+source edit, even a "just data" one, before testing against `start`.
+
+**Partner verification gate, tested both sides**: an unverified partner
+was correctly blocked (`403`) from booking a facility; after Staff
+verification, the identical request succeeded.
+
+**Facility booking routes to the real manager, not a hardcoded
+facilities office** — verified with three real accounts: the booking
+captured `approverEmail: "researcher@mouau.edu.ng"` (resolved live from
+the Facility's `managerSlug` → Researcher → her actual login email);
+`staff@mouau.edu.ng` was correctly blocked from deciding it (`403`,
+"wasn't routed to you"); only the real manager could approve.
+
+**Patent draft→filed gate, verified against the public page directly**:
+a draft submission was confirmed absent from `/research/innovation`;
+after Approver sign-off, the identical page showed it. Licensing
+inquiries were then tested both ways — accepted against the real filed
+patent's slug, rejected (`400`) against a fabricated one.
+
+**Internship application against real Stage 8A/8B student data**: a
+student matriculated through the genuine pipeline applied to a verified
+partner's real posting; a duplicate application was blocked (`409`);
+the partner's own portal view showed the real applicant email.
+
+### New in this stage
+`lib/partner/store.ts` (PartnerOrganization, FacilityBookingRequest,
+PatentRecord, LicensingInquiry, ConsultancyRequest, InternshipPosting/
+Application, procurement opportunities), API routes for
+register-org/verify, patents (submit + approve), facility-booking
+(request + decide), licensing-inquiry, consultancy,
+internships (post + apply/decide), and procurement-interest. Partner,
+Researcher, Approver, and Student-facing pages for all of the above.
+
+### Deferred this pass
+Accepted internship applications don't yet create a Stage 15 SIWES
+Placement record — that hand-off point is noted in the API route
+comments but not built, since Stage 15 (Student Life) doesn't exist yet.
+Procurement stays intake-only, as the spec specifies (no tender
+evaluation workflow).

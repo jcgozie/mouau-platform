@@ -359,7 +359,8 @@ export type AuditAction =
   | "admission_decision" | "matriculation" | "grade_moderated" | "senate_approved" | "graduation"
   | "leave_decided" | "appraisal_access_denied" | "retirement_alert_computed" | "promotion_decided"
   | "ethics_review_decided" | "proposal_promoted" | "role_granted"
-  | "donation_confirmed" | "mentoring_match_decided";
+  | "donation_confirmed" | "mentoring_match_decided"
+  | "partner_verified" | "patent_approved" | "booking_decided" | "procurement_interest_registered";
 
 export interface AuditLogEntry {
   id: string;
@@ -749,4 +750,96 @@ export interface GivingFund {
   name: string;
   purpose: string;
   impactNarrative: string;
+}
+
+/**
+ * STAGE 13 ADDITIONS — Partner/Industry Portal
+ * ----------------------------------------------------------------
+ * Also closes a gap flagged as deferred in Stage 11: Patent/IP
+ * submissions get a real approval flow here, since Licensing Inquiry
+ * needs to reference a genuine patent record, not the static list
+ * Stage 4 shipped with.
+ */
+
+export type AgreementStatus = "none" | "in_discussion" | "active_mou" | "expired";
+
+export interface PartnerOrganization {
+  id: string;
+  name: string;
+  sector: string;
+  agreementStatus: AgreementStatus;
+  primaryContactEmail: string;
+  ownerDirectorateSlug: string;
+  verified: boolean; // Directorate approval required before transactional access
+}
+
+export type BookingStatus = "requested" | "approved" | "declined" | "completed";
+
+export interface FacilityBookingRequest {
+  id: string;
+  partnerEmail: string;
+  facilitySlug: string;
+  requestedDates: string;
+  purpose: string;
+  status: BookingStatus;
+  approverEmail?: string;
+}
+
+export interface PatentRecord {
+  id: string;
+  slug: string;
+  title: string;
+  inventorEmails: string[];
+  filingStatus: PatentFilingStatus;
+  filingDate: string;
+  relatedProjectSlug?: string;
+  licensingContactEmail?: string;
+}
+
+export type LicensingInquiryStatus = "submitted" | "under_discussion" | "agreement_reached" | "declined";
+
+export interface LicensingInquiry {
+  id: string;
+  partnerEmail: string;
+  patentSlug: string;
+  details: string;
+  status: LicensingInquiryStatus;
+}
+
+export type ConsultancyStatus = "submitted" | "routed" | "closed";
+
+export interface ConsultancyRequest {
+  id: string;
+  partnerEmail: string;
+  projectSlug?: string;
+  researchArea?: string;
+  details: string;
+  status: ConsultancyStatus;
+}
+
+export interface InternshipPosting {
+  id: string;
+  partnerEmail: string;
+  title: string;
+  description: string;
+  eligibleCollegeSlug?: string;
+  openings: number;
+  status: "open" | "closed";
+}
+
+export type InternshipApplicationStatus = "submitted" | "shortlisted" | "offered" | "declined" | "accepted";
+
+export interface InternshipApplication {
+  id: string;
+  postingId: string;
+  studentEmail: string;
+  status: InternshipApplicationStatus;
+}
+
+export interface ProcurementOpportunity {
+  slug: string;
+  title: string;
+  category: string;
+  deadline: string;
+  contactEmail: string;
 }

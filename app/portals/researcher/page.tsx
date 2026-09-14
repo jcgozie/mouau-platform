@@ -62,6 +62,10 @@ export default async function ResearcherPortalPage() {
           <span className="font-display text-lg text-ink">Postgraduate Tracking</span>
           <p className="mt-1 text-sm text-ink/50">Supervisor + student shared milestone view</p>
         </a>
+        <a href="/portals/researcher/patents" className="bg-paper px-6 py-6 hover:bg-sage-dim">
+          <span className="font-display text-lg text-ink">Patents / IP</span>
+          <p className="mt-1 text-sm text-ink/50">Submit a filing for approval and public listing</p>
+        </a>
       </div>
     </PortalShell>
   );

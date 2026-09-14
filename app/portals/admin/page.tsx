@@ -27,6 +27,10 @@ const ACTION_LABEL: Record<string, string> = {
   role_granted: "Role granted",
   donation_confirmed: "Donation confirmed (demo override)",
   mentoring_match_decided: "Mentoring match decided",
+  partner_verified: "Partner organization verified",
+  patent_approved: "Patent filed",
+  booking_decided: "Facility booking decided",
+  procurement_interest_registered: "Procurement interest registered",
 };
 
 export default function AdminPortalPage() {

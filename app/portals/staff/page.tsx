@@ -7,6 +7,8 @@ const LINKS = [
   { href: "/portals/staff/ethics-review", title: "Ethics Review", note: "Approver/SystemAdministrator only" },
   { href: "/portals/staff/donations", title: "Confirm Donations", note: "Demo override standing in for Stage 14" },
   { href: "/portals/staff/advancement", title: "Advancement Overview", note: "Alumni engagement reporting" },
+  { href: "/portals/staff/partner-verification", title: "Partner Verification", note: "Gate transactional partner access" },
+  { href: "/portals/staff/patent-approval", title: "Patent Approval", note: "Approver/SystemAdministrator only" },
   { href: "/portals/staff/admissions", title: "Admissions Review", note: "Stage 8A" },
   { href: "/portals/staff/assessments", title: "Enter Assessment Scores", note: "Stage 8B" },
   { href: "/portals/staff/moderation", title: "Moderation Queue", note: "Stage 8B" },

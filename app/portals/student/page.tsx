@@ -15,6 +15,7 @@ const LINKS = [
   { href: "/portals/student/research", title: "Postgraduate Research", note: "For PG research students with a supervisor" },
   { href: "/portals/student/mentoring", title: "Mentoring", note: "Offers from alumni mentors" },
   { href: "/portals/student/career-network", title: "Career Network", note: "Alumni who opted into student visibility" },
+  { href: "/portals/student/internships", title: "Internships", note: "Apply to real partner-posted opportunities" },
 ];
 
 export default async function StudentPortalPage() {
