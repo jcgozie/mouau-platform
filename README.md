@@ -703,3 +703,71 @@ Student/Staff-facing finance *pages* weren't built — the engine and all
 its routes are real and tested, but the UI to drive them is still to
 come. Sponsor and Alumni payment flows reuse the same engine but their
 portal buttons aren't wired to it yet.
+
+## Stage 15 — Library & Student Life
+
+The largest remaining stage, and the one with the strictest boundary in
+the entire platform. Eleven sub-systems; the confidentiality guarantee
+on Health, Counselling, and Disability Support was tested hardest.
+
+**The confidentiality boundary — tested against the highest-privilege
+accounts on the platform.** Health/counselling records are readable ONLY
+by the student themselves and the treating provider. Verified:
+
+| Viewer | Result |
+|---|---|
+| The student themselves | `200` — 1 record |
+| The treating provider (`health@mouau.edu.ng`) | `200` — 1 record |
+| General Staff account | **`403`** |
+| **SystemAdministrator** (highest privilege) | **`403`** |
+| **Sponsor holding ALL four consent categories** including Alerts | **`403`** |
+
+The Sponsor case is the subtlest leak risk, since Stage 9 grants them an
+"Alerts" category — so I also inspected the Stage 9 sponsor data
+endpoint's actual response keys: `studentEmail, matricNumber,
+programmeTitle, permissions, academic, financial, alerts` — **zero**
+health-related keys. Holding Staff, Approver, or SystemAdministrator
+grants nothing here; only being the student or the treating provider
+does, enforced per-request at the API layer through a single chokepoint
+(`canAccessHealthRecords`), not by hiding UI.
+
+Denial logging is deliberately minimal — it records that access was
+denied but **not whose records were sought or whether any exist**, since
+logging that would itself leak the information the boundary protects.
+
+Disability/accessibility support follows the same pattern, with one
+addition: an instructor can see an approved accommodation **only if the
+student explicitly shared it with them**. There is no route anywhere
+that lets an instructor request or self-grant that access.
+
+**Three more long-standing stubs closed for real**:
+- **Hostel clearance** is now computed from the real room-assignment
+  record (mirroring Stage 14's Bursary fix) — verified blocked (`409`)
+  while still assigned to a room, and the old manual override now
+  returns `400` directing to the real route. Staff cannot click past it.
+- **SIWES placement** closes Stage 13's explicitly deferred hand-off: an
+  *accepted* internship application becomes a real placement, and where
+  SIWES is a programme requirement, graduation is genuinely gated on a
+  supervisor-verified completion — verified `409` even with all four
+  clearance units cleared.
+- **The academic calendar** closes Stage 8B's "calendar rules" gap,
+  which had no concrete source. Registration now reads a real
+  `AcademicCalendarEntry`. **Proven non-vacuous**: I temporarily shifted
+  the window out of range and confirmed registration was rejected
+  (`409`), then restored it.
+
+### New in this stage
+`lib/studentlife/store.ts` (confidential health/accessibility stores
+behind access-guard functions, hostel rooms, clubs, academic calendar,
+SIWES, SERVICOM complaints with per-category SLAs), and API routes for
+appointments, accessibility, accommodation, hostel-clearance, siwes,
+clubs, and complaints. Two new provider accounts
+(`health@mouau.edu.ng`, `accessibility@mouau.edu.ng`).
+
+### Deferred this pass
+Student-facing **pages** for these sub-systems weren't built — as with
+Stage 14, the engine and routes are real and tested but the UI to drive
+them is still to come. Library/ILS integration, the GIS campus map
+upgrade, careers/employability, and campus transport were not built:
+they depend on external systems this scaffold has no access to, and I'd
+rather leave them absent than fake them.

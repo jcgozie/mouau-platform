@@ -42,6 +42,8 @@ export const userStore: PlatformUser[] = [
   seed("u7", "GreenFields Partner", "partner@example.com", ["Partner"], false),
   seed("u8", "Bisi Approver", "approver@mouau.edu.ng", ["Staff", "Approver"], true),
   seed("u9", "System Admin", "admin@mouau.edu.ng", ["Staff", "SystemAdministrator"], true),
+  seed("u10", "Campus Health Services", "health@mouau.edu.ng", ["Staff"], true),
+  seed("u11", "Accessibility Support Officer", "accessibility@mouau.edu.ng", ["Staff"], true),
 ];
 
 export const DEMO_TOTP_SECRET_FOR_TESTING = DEMO_TOTP_SECRET;

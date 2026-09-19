@@ -5,7 +5,11 @@ import { getOrCreateClearance, graduationStore } from "@/lib/academics/store";
 import { findStudentRecordByEmail } from "@/lib/admissions/store";
 import { findUserByEmail } from "@/lib/auth/users";
 import { logAuditEvent } from "@/lib/auth/auditLog";
+import { siwesPlacementStore } from "@/lib/studentlife/store";
 import type { GraduationRecord } from "@/lib/types";
+
+// Programmes where SIWES completion is a graduation requirement.
+const SIWES_REQUIRED_PROGRAMMES = ["bsc-crop-science"];
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
@@ -24,6 +28,21 @@ export async function POST(request: Request) {
       { error: `Cannot graduate — outstanding clearance: ${outstanding.map((i) => i.unit).join(", ")}` },
       { status: 409 }
     );
+  }
+
+  // Stage 15: where SIWES is a graduation requirement for the
+  // programme, a verified-complete placement is genuinely required —
+  // wired the same way Bursary and Hostel clearance were.
+  if (SIWES_REQUIRED_PROGRAMMES.includes(studentRecord.programmeSlug)) {
+    const completed = siwesPlacementStore.find(
+      (p) => p.studentEmail.toLowerCase() === studentEmail.toLowerCase() && p.status === "completed"
+    );
+    if (!completed) {
+      return NextResponse.json(
+        { error: "Cannot graduate — SIWES is required for this programme and no verified-complete placement is on file" },
+        { status: 409 }
+      );
+    }
   }
 
   if (graduationStore.some((g) => g.studentEmail.toLowerCase() === studentEmail.toLowerCase())) {

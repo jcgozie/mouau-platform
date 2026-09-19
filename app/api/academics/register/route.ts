@@ -6,6 +6,7 @@ import { findStudentRecordByEmail } from "@/lib/admissions/store";
 import { curriculumFor } from "@/lib/academics/curriculum";
 import { mockStudyData } from "@/lib/studyData";
 import { activeHoldFor } from "@/lib/finance/store";
+import { currentCalendar } from "@/lib/studentlife/store";
 import type { RegistrationRecord } from "@/lib/types";
 
 export async function POST(request: Request) {
@@ -16,6 +17,18 @@ export async function POST(request: Request) {
 
   const record = findStudentRecordByEmail(session.user.email!);
   if (!record) return NextResponse.json({ error: "No Student Master Record found" }, { status: 404 });
+
+  // Stage 15 retrofit: Stage 8B referenced "academic-calendar rules"
+  // with no concrete source. The window now comes from a real
+  // AcademicCalendarEntry, not an assumed/hardcoded date range.
+  const calendar = currentCalendar();
+  const today = new Date().toISOString().slice(0, 10);
+  if (today < calendar.registrationOpens || today > calendar.registrationCloses) {
+    return NextResponse.json(
+      { error: `Registration is closed — the ${calendar.session} window runs ${calendar.registrationOpens} to ${calendar.registrationCloses}` },
+      { status: 409 }
+    );
+  }
 
   // Stage 14 retrofit: this was a documented stub since Stage 8B —
   // registration now genuinely blocks on a real, active financial hold.

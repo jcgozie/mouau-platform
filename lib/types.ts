@@ -361,7 +361,8 @@ export type AuditAction =
   | "ethics_review_decided" | "proposal_promoted" | "role_granted"
   | "donation_confirmed" | "mentoring_match_decided"
   | "partner_verified" | "patent_approved" | "booking_decided" | "procurement_interest_registered"
-  | "payment_confirmed" | "payment_confirmation_failed" | "adjustment_decided" | "financial_hold_placed" | "financial_hold_cleared";
+  | "payment_confirmed" | "payment_confirmation_failed" | "adjustment_decided" | "financial_hold_placed" | "financial_hold_cleared"
+  | "confidential_access_denied" | "siwes_completion_verified" | "complaint_escalated";
 
 export interface AuditLogEntry {
   id: string;
@@ -935,4 +936,134 @@ export interface FinancialHold {
   reason: string;
   amountOwed: number;
   status: FinancialHoldStatus;
+}
+
+/**
+ * STAGE 15 ADDITIONS — Library & Student Life
+ * ----------------------------------------------------------------
+ * CONFIDENTIALITY BOUNDARY — the strictest in this platform.
+ *
+ * Health, Counselling, and Disability Support records are visible ONLY
+ * to the student themselves and the treating provider / reviewing
+ * accessibility officer. They are NOT visible to:
+ *   - academic advisers or HODs
+ *   - Sponsors, even with the Stage 9 "Alerts" category granted
+ *   - general Staff, Approver, or SystemAdministrator roles
+ *   - any analytics, search, or audit view
+ * This is enforced at the API layer per-request, not by hiding UI.
+ */
+
+export type AppointmentServiceType = "health" | "counselling";
+export type AppointmentStatus = "booked" | "completed" | "cancelled";
+
+export interface HealthAppointment {
+  id: string;
+  studentEmail: string;
+  providerEmail: string;
+  serviceType: AppointmentServiceType;
+  dateTime: string;
+  status: AppointmentStatus;
+  // Clinical notes: provider-authored, readable only by the student and
+  // the treating provider. Never surfaced anywhere else.
+  clinicalNote?: string;
+}
+
+export type AccessibilityRequestStatus = "submitted" | "approved" | "declined";
+
+export interface AccessibilityRequest {
+  id: string;
+  studentEmail: string;
+  needType: string;
+  requestedSupport: string;
+  status: AccessibilityRequestStatus;
+  reviewedBy?: string;
+  approvedAccommodations?: string;
+  // Student-initiated sharing ONLY — never automatic disclosure.
+  sharedWithInstructorEmails: string[];
+}
+
+export type RoomAssignmentStatus = "requested" | "assigned" | "checked_in" | "checked_out";
+
+export interface HostelRoom {
+  id: string;
+  building: string;
+  roomNumber: string;
+  capacity: number;
+}
+
+export interface RoomAssignment {
+  id: string;
+  studentEmail: string;
+  roomId: string;
+  session: string;
+  status: RoomAssignmentStatus;
+}
+
+export interface Club {
+  slug: string;
+  name: string;
+  category: string;
+  description: string;
+  leadershipEmail?: string;
+}
+
+export interface ClubMembership {
+  id: string;
+  clubSlug: string;
+  studentEmail: string;
+  joinedAt: string;
+}
+
+export type IncidentStatus = "reported" | "under_review" | "resolved";
+
+export interface SecurityIncident {
+  id: string;
+  reporterEmail: string;
+  location: string;
+  description: string;
+  status: IncidentStatus;
+  reportedAt: string;
+}
+
+export interface AcademicCalendarEntry {
+  session: string;
+  registrationOpens: string;
+  registrationCloses: string;
+  addDropDeadline: string;
+  examPeriodStart: string;
+  examPeriodEnd: string;
+  resultsPublicationTarget: string;
+  convocationDate: string;
+}
+
+export type PlacementStatus = "active" | "completed" | "terminated";
+
+export interface SiwesPlacement {
+  id: string;
+  studentEmail: string;
+  internshipApplicationId: string;
+  partnerOrgName: string;
+  academicSupervisorEmail: string;
+  startDate: string;
+  endDate: string;
+  logbookEntries: { date: string; entry: string }[];
+  status: PlacementStatus;
+  completionVerifiedBy?: string;
+}
+
+export type ComplaintCategory = "academic" | "welfare" | "facilities" | "conduct" | "other";
+export type ComplaintStatus = "submitted" | "in_progress" | "resolved" | "escalated";
+
+export interface ServicomComplaint {
+  id: string;
+  complainantEmail: string;
+  category: ComplaintCategory;
+  subject: string;
+  details: string;
+  status: ComplaintStatus;
+  slaDays: number;
+  submittedAt: string;
+  // For academic appeals referencing a specific Stage 8B record.
+  relatedAssessmentId?: string;
+  resolvedAt?: string;
 }

@@ -25,11 +25,19 @@ export async function POST(request: Request) {
     );
   }
 
-  const isRealModule = unit === "Library" || unit === "Department";
+  // Stage 15 closed the Hostel stub the same way.
+  if (unit === "Hostel") {
+    return NextResponse.json(
+      { error: "Hostel clearance is computed from real accommodation records — use /api/studentlife/hostel-clearance instead" },
+      { status: 400 }
+    );
+  }
+
+  // Only Library and Department reach this point — Bursary and Hostel
+  // are both computed from real records and rejected above. Both
+  // remaining units are genuine staff sign-offs, not demo overrides.
   item.status = "cleared";
-  item.note = isRealModule
-    ? "Cleared."
-    : `Cleared via manual staff override — demo only. Real ${unit} status requires Stage 15, which this scaffold doesn't include.`;
+  item.note = "Cleared.";
 
   return NextResponse.json(clearance);
 }
