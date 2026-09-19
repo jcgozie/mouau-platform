@@ -360,7 +360,8 @@ export type AuditAction =
   | "leave_decided" | "appraisal_access_denied" | "retirement_alert_computed" | "promotion_decided"
   | "ethics_review_decided" | "proposal_promoted" | "role_granted"
   | "donation_confirmed" | "mentoring_match_decided"
-  | "partner_verified" | "patent_approved" | "booking_decided" | "procurement_interest_registered";
+  | "partner_verified" | "patent_approved" | "booking_decided" | "procurement_interest_registered"
+  | "payment_confirmed" | "payment_confirmation_failed" | "adjustment_decided" | "financial_hold_placed" | "financial_hold_cleared";
 
 export interface AuditLogEntry {
   id: string;
@@ -842,4 +843,96 @@ export interface ProcurementOpportunity {
   category: string;
   deadline: string;
   contactEmail: string;
+}
+
+/**
+ * STAGE 14 ADDITIONS — Finance & Payments Engine (Remita)
+ * ----------------------------------------------------------------
+ * Real RRR-based payment flow. Remita's actual hosted endpoints aren't
+ * reachable from this sandbox, so lib/finance/remitaSimulator.ts stands
+ * in for Remita's server — but the application-side discipline (never
+ * trust a client redirect; always confirm server-side against a
+ * transaction-status check) is built exactly as it would be for the
+ * real Remita API, and is what's actually under test.
+ */
+
+export interface FeeItem {
+  name: string;
+  amount: number;
+}
+
+export interface FeeSchedule {
+  id: string;
+  programmeSlug: string;
+  session: string;
+  feeItems: FeeItem[];
+}
+
+export type InvoiceStatus = "unbilled" | "billed" | "partially_paid" | "paid";
+
+export interface StudentInvoice {
+  id: string;
+  studentEmail: string;
+  session: string;
+  feeItems: FeeItem[];
+  total: number;
+  dueDate: string;
+  status: InvoiceStatus;
+}
+
+export type PaymentStatus = "rrr_generated" | "confirmed" | "failed";
+export type PayerType = "Student" | "Sponsor" | "Alumni";
+
+export interface Payment {
+  id: string;
+  payerEmail: string;
+  payerType: PayerType;
+  invoiceId?: string;
+  donationId?: string;
+  amount: number;
+  rrr: string;
+  remitaTransactionRef?: string;
+  status: PaymentStatus;
+  initiatedAt: string;
+  confirmedAt?: string;
+}
+
+export interface ReconciliationRecord {
+  id: string;
+  paymentId: string;
+  remitaSettlementRef: string;
+  matched: boolean;
+  reconciledAt: string;
+}
+
+export interface Receipt {
+  id: string;
+  paymentId: string;
+  receiptNumber: string;
+  issuedAt: string;
+}
+
+export type AdjustmentType = "refund" | "waiver" | "scholarship";
+export type AdjustmentStatus = "pending" | "approved" | "rejected";
+
+export interface FinancialAdjustment {
+  id: string;
+  studentEmail: string;
+  invoiceId: string;
+  type: AdjustmentType;
+  amount: number;
+  reason: string;
+  requestedBy: string;
+  approvedBy?: string;
+  status: AdjustmentStatus;
+}
+
+export type FinancialHoldStatus = "active" | "cleared";
+
+export interface FinancialHold {
+  id: string;
+  studentEmail: string;
+  reason: string;
+  amountOwed: number;
+  status: FinancialHoldStatus;
 }

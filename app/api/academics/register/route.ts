@@ -5,6 +5,7 @@ import { registrationStore, assessmentsFor } from "@/lib/academics/store";
 import { findStudentRecordByEmail } from "@/lib/admissions/store";
 import { curriculumFor } from "@/lib/academics/curriculum";
 import { mockStudyData } from "@/lib/studyData";
+import { activeHoldFor } from "@/lib/finance/store";
 import type { RegistrationRecord } from "@/lib/types";
 
 export async function POST(request: Request) {
@@ -15,6 +16,16 @@ export async function POST(request: Request) {
 
   const record = findStudentRecordByEmail(session.user.email!);
   if (!record) return NextResponse.json({ error: "No Student Master Record found" }, { status: 404 });
+
+  // Stage 14 retrofit: this was a documented stub since Stage 8B —
+  // registration now genuinely blocks on a real, active financial hold.
+  const hold = activeHoldFor(session.user.email!);
+  if (hold) {
+    return NextResponse.json(
+      { error: `Registration blocked by an active financial hold: ${hold.reason} (₦${hold.amountOwed.toLocaleString()} outstanding)` },
+      { status: 409 }
+    );
+  }
 
   const { courseCodes } = await request.json();
   if (!Array.isArray(courseCodes) || courseCodes.length === 0) {

@@ -24,7 +24,7 @@ export function getOrCreateClearance(studentEmail: string): ClearanceRecord {
     record = {
       studentEmail,
       items: [
-        { unit: "Bursary", status: "pending", note: "Real status arrives with Stage 14's finance engine — not yet live." },
+        { unit: "Bursary", status: "pending", note: "Computed from real finance records — run Bursary clearance to verify outstanding balance." },
         { unit: "Hostel", status: "pending", note: "Real status arrives with Stage 15's accommodation module — not yet live." },
         { unit: "Library", status: "pending", note: "No outstanding items on file." },
         { unit: "Department", status: "pending", note: "Awaiting departmental sign-off." },

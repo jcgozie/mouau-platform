@@ -638,3 +638,68 @@ Placement record — that hand-off point is noted in the API route
 comments but not built, since Stage 15 (Student Life) doesn't exist yet.
 Procurement stays intake-only, as the spec specifies (no tender
 evaluation workflow).
+
+## Stage 14 — Finance & Payments Engine (Remita)
+
+This is where Fees, Sponsor payments, and Alumni giving — honestly
+stubbed since Stage 8A — finally become real.
+
+**Honest boundary, stated plainly**: this sandbox has no network access
+to Remita's real API, so `lib/finance/remitaSimulator.ts` stands in for
+Remita's server, mirroring its real RRR-generation and
+transaction-status-check shape. The *application-side discipline* is
+built exactly as it would be against the real API and is what's actually
+under test. Swapping that one module for a real Remita SDK call is the
+only change a production deployment needs.
+
+**The attack test — the single most important check in this stage.** A
+payment was initiated (server-generated RRR), then confirmation was
+attempted *without paying*, with deliberately forged fields in the
+request body:
+`{"paymentId":"...","confirmed":true,"status":"paid","paymentSuccessful":true}`
+→ rejected (`409`, "Payment not yet confirmed by the gateway"). None of
+those client-supplied fields are read anywhere in the confirmation code.
+Only a server-side gateway status check against the payment's own RRR
+can mark anything paid. After the payer genuinely completed payment on
+the (simulated) gateway, the identical endpoint — with no fake fields —
+succeeded and issued receipt `MOUAU-2026-00001`.
+
+**Three Stage 8B stubs closed for real**:
+- **Registration now genuinely blocks on an active financial hold** —
+  verified: with a ₦60,000 hold placed, registration returned `409`
+  naming the reason and amount; after payment, the identical request
+  returned `200`.
+- **Bursary clearance is computed from the real outstanding balance**,
+  not a manual override — verified: blocked at `409` with ₦60,000
+  outstanding, `cleared: true` with balance `0` after payment.
+- **The old manual clearance override can no longer bypass Bursary** —
+  verified: routing Bursary through the Stage 8B override endpoint now
+  returns `400` directing to the real balance-driven route. Staff cannot
+  click past an unpaid balance.
+
+**Reconciliation** matches confirmed payments against the gateway's
+settlement report — verified `matched: true` against a real settlement
+reference. Unmatched payments are flagged rather than silently assumed
+correct.
+
+**Refunds/waivers/scholarships require a distinct approver** — the
+requester cannot approve their own adjustment (`403`).
+
+### Recovery note
+The sandbox filesystem reset mid-stage. The project was restored intact
+from the Stage 13 zip (git history preserved through commit `47672e3`),
+and the Stage 14 work in progress was re-applied. No work was lost.
+
+### New in this stage
+`lib/finance/store.ts` (fee schedules, invoices, payments,
+reconciliation, receipts, adjustments, holds, plus computed
+`invoiceBalance`/`studentOutstandingBalance` — never cached numbers),
+`lib/finance/remitaSimulator.ts`, and API routes for
+generate-invoice, initiate-payment, confirm-payment, reconcile,
+adjustment, financial-hold, and bursary-clearance.
+
+### Deferred this pass
+Student/Staff-facing finance *pages* weren't built — the engine and all
+its routes are real and tested, but the UI to drive them is still to
+come. Sponsor and Alumni payment flows reuse the same engine but their
+portal buttons aren't wired to it yet.

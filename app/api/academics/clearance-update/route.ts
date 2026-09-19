@@ -15,11 +15,21 @@ export async function POST(request: Request) {
   const item = clearance.items.find((i) => i.unit === unit);
   if (!item) return NextResponse.json({ error: "Unknown clearance unit" }, { status: 400 });
 
+  // Stage 14 closed the Bursary stub — it now has a real,
+  // balance-driven check, so this manual override no longer applies to
+  // it. Routing it here would let staff bypass a genuine unpaid balance.
+  if (unit === "Bursary") {
+    return NextResponse.json(
+      { error: "Bursary clearance is computed from real finance records — use /api/finance/bursary-clearance instead" },
+      { status: 400 }
+    );
+  }
+
   const isRealModule = unit === "Library" || unit === "Department";
   item.status = "cleared";
   item.note = isRealModule
     ? "Cleared."
-    : `Cleared via manual staff override — demo only. Real ${unit} status requires ${unit === "Bursary" ? "Stage 14" : "Stage 15"}, which this scaffold doesn't include.`;
+    : `Cleared via manual staff override — demo only. Real ${unit} status requires Stage 15, which this scaffold doesn't include.`;
 
   return NextResponse.json(clearance);
 }
