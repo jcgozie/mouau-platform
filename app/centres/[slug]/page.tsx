@@ -28,7 +28,8 @@ export default function CentreProfilePage({ params }: { params: { slug: string }
     })
   );
   const news = mockHomepageData.news.filter(
-    (n) => n.relatedEntityType === "centre" && n.relatedEntitySlug === centre.slug
+    (n) =>
+      (!("approvalStatus" in n) || (n as any).approvalStatus === "approved") && n.relatedEntityType === "centre" && n.relatedEntitySlug === centre.slug
   );
 
   return (

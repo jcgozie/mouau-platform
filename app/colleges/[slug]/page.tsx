@@ -32,7 +32,8 @@ export default function CollegeProfilePage({ params }: { params: { slug: string 
   // not the global feed — this is the wiring the Stage 1 homepage feed
   // and this page's earlier version were both stubbed against.
   const news = mockHomepageData.news.filter(
-    (n) => n.relatedEntityType === "college" && n.relatedEntitySlug === college.slug
+    (n) =>
+      (!("approvalStatus" in n) || (n as any).approvalStatus === "approved") && n.relatedEntityType === "college" && n.relatedEntitySlug === college.slug
   );
 
   return (

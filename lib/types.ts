@@ -1067,3 +1067,62 @@ export interface ServicomComplaint {
   relatedAssessmentId?: string;
   resolvedAt?: string;
 }
+
+/**
+ * STAGE 16 ADDITIONS — AI Assistant / Governed Semantic Search
+ * ----------------------------------------------------------------
+ * HARD EXCLUSION, ENFORCED BY CONSTRUCTION.
+ *
+ * Health, counselling, and disability-support records are excluded at
+ * INDEX BUILD time — the indexing pipeline never reads those stores at
+ * all. This is deliberately stronger than a query-time permission
+ * filter: there is no phrasing of any question, by any role, that can
+ * surface that data, because it was never in the retrieval corpus.
+ *
+ * Everything else is indexed only once APPROVED (Stage 6 governance),
+ * and retrieved at the querying user's own RBAC level.
+ */
+
+export type IndexedEntityType =
+  | "College" | "Department" | "Centre" | "Directorate" | "Programme"
+  | "Course" | "Researcher" | "Project" | "Publication" | "Facility"
+  | "Policy" | "News" | "StaffKnowledge";
+
+export type IndexVisibility = "public" | "staff_only";
+
+export interface IndexedDocument {
+  id: string;
+  entityType: IndexedEntityType;
+  title: string;
+  body: string;
+  href: string;
+  visibility: IndexVisibility;
+  // Set when a document is scoped to one unit — staff from other units
+  // don't see it even though they hold the Staff role.
+  ownerUnitSlug?: string;
+}
+
+export interface RetrievalHit {
+  document: IndexedDocument;
+  score: number;
+}
+
+export interface AssistantSource {
+  title: string;
+  href: string;
+  entityType: IndexedEntityType;
+}
+
+export interface AssistantAnswer {
+  answer: string;
+  sources: AssistantSource[];
+  escalationAvailable: true;
+}
+
+export interface AiQueryLogEntry {
+  id: string;
+  userEmail: string | "anonymous";
+  query: string;
+  retrievedSourceIds: string[];
+  answeredAt: string;
+}

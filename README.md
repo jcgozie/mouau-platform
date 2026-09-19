@@ -771,3 +771,65 @@ them is still to come. Library/ILS integration, the GIS campus map
 upgrade, careers/employability, and campus transport were not built:
 they depend on external systems this scaffold has no access to, and I'd
 rather leave them absent than fake them.
+
+## Stage 16 — AI Assistant / Governed Semantic Search
+
+**The hard exclusion is enforced by construction, not by filtering.**
+`lib/assistant/indexBuilder.ts` deliberately never imports
+`healthAppointmentStore` or `accessibilityRequestStore` — verified by
+inspecting its actual import list against a deny-list. There is no
+phrasing of any question, by any role, that can surface that data,
+because it was never in the retrieval corpus to begin with. That is a
+strictly stronger guarantee than a query-time permission check.
+
+**Adversarial test**: with a real counselling appointment seeded for a
+real student, I queried as **SystemAdministrator** (highest privilege)
+using the appointment's own ID, the student's email, the exact date, and
+several natural-language variants. The student's record never surfaced
+in any of them.
+
+One result needed care to interpret rather than accept at face value: a
+query for "counselling appointments" *did* return a source — the **Health
+Services directorate's own public description** ("Provides primary
+healthcare and counselling services… Clinic appointment (1-day SLA).
+Contact health@mouau.edu.ng"). That is information MOUAU publishes
+deliberately, not a leak. Similarly, an `APT-` string appearing in the
+query log turned out to be the echoed *query text* I had typed, not a
+retrieved source. Both were checked specifically rather than assumed.
+
+**No privilege escalation through the assistant.** Retrieval is scoped
+to the viewer's own permissions *before* scoring, so an
+out-of-scope document is never even a candidate. Verified: anonymous
+visitors get `0` StaffKnowledge documents; Registry staff get exactly
+`1` — their own unit's — and not other units'. Holding the Staff role
+alone unlocks nothing outside your unit, same principle as Stage 10's
+appraisal boundary.
+
+### A real bug this stage caught and fixed
+AI-drafted content was correctly created with `approvalStatus: "pending"`
+— but it **was appearing on the public news page anyway**. The drafting
+route was right; Stage 5's news page had never filtered on approval
+status, because until now nothing in the store was ever unapproved. Fixed
+at the CMS boundary (`lib/cms.ts`) so every consumer is protected rather
+than each page needing to remember, plus the college and centre feeds.
+Re-verified: draft absent from `/news` and the homepage, real news still
+rendering.
+
+**Honest note on answer generation**: `composeAnswer` is extractive — it
+assembles text from retrieved records rather than calling an LLM, since
+this scaffold has no model credentials configured. The governance
+properties the spec cares about (retrieval scoped to the viewer,
+mandatory citations, nothing answered without a grounding document,
+escalation always offered) are all real and are what's under test.
+Swapping that one function for an LLM call receiving **only** the
+retrieved hits as context is the production change — the retrieval
+boundary is what makes that call safe.
+
+**Escalation reuses Stage 6's real ticket system** and is always
+available on the answer, not a fallback that appears only after failure.
+
+### New in this stage
+`lib/assistant/` (indexBuilder with the documented deny-list, retrieval
+with RBAC-scoped candidate selection, query log), API routes for
+ask / draft-content / escalate, the public `/assistant` page, and the
+`/portals/admin/ai-queries` audit view.

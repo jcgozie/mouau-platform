@@ -33,7 +33,15 @@ export async function fetchHomepageData(): Promise<HomepageData | null> {
     }
 
     // No live CMS configured yet — serve mock content.
-    return mockHomepageData;
+    // Stage 16: filter unapproved records at this boundary so every
+    // consumer of homepage data is protected, not just the pages that
+    // remember to check.
+    return {
+      ...mockHomepageData,
+      news: mockHomepageData.news.filter(
+        (n) => !("approvalStatus" in n) || (n as any).approvalStatus === "approved"
+      ),
+    };
   } catch {
     return null;
   }

@@ -14,7 +14,12 @@ export default function NewsLandingPage({
 }: {
   searchParams: { category?: string };
 }) {
-  const { news } = mockHomepageData;
+  // Stage 16 fix: records carrying an approvalStatus must be approved
+  // to appear publicly. AI-drafted content arrives as "pending" and
+  // was previously rendering here — a real bug this stage caught.
+  const news = mockHomepageData.news.filter(
+    (n) => !("approvalStatus" in n) || (n as any).approvalStatus === "approved"
+  );
   const categories = Array.from(new Set(news.map((n) => n.category)));
   const filtered = searchParams.category
     ? news.filter((n) => n.category === searchParams.category)
